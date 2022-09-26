@@ -1,0 +1,5 @@
+{
+  "application": "AWSBinPackingSolution",
+  "language": "typescript",
+  "runtime": "nodejs"
+}

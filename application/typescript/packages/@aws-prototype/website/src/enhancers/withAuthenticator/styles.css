@@ -1,0 +1,6 @@
+:root {
+  --amplify-components-authenticator-max-width: 100%;
+}
+.amplify-tabs {
+  display: none;
+}

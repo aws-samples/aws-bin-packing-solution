@@ -1,0 +1,45 @@
+{
+  "name": "@aws-prototype/cicd",
+  "version": "0.0.0",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "scripts": {
+    "compile": "tsc",
+    "build": "yarn run compile && yarn run test && if [ -z ${AWS_PROFILE} ]; then yarn cdk synth; else yarn cdk synth --profile ${AWS_PROFILE}; fi",
+    "watch": "tsc -w",
+    "test": "jest --pass-with-no-tests",
+    "cdk": "cdk",
+    "deploy-sandbox": "if [ -z ${AWS_PROFILE} ]; then yarn cdk -a cdk.out/assembly-Sandbox deploy --all --require-approval never; else cdk --profile ${AWS_PROFILE} -a cdk.out/assembly-Sandbox deploy --all --require-approval never; fi",
+    "clean": "rm -rf cdk.out dist node_modules",
+    "synth": "if [ -z ${AWS_PROFILE} ]; then yarn cdk synth; else yarn cdk synth --profile ${AWS_PROFILE}; fi",
+    "lint": "eslint --max-warnings 0  .",
+    "lint:fix": "eslint --fix ."
+  },
+  "devDependencies": {
+    "@types/common-tags": "^1.8.0",
+    "@types/jest": "26.0.9",
+    "@types/node": "^15.3.1",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "aws-cdk": "^2.33.0",
+    "babel-eslint": "^10.0.3",
+    "cdk-nag": "^2.15.20",
+    "cross-env": "^7.0.2",
+    "jest": "^26.6.3",
+    "minimist": "^1.2.5",
+    "ts-jest": "26.2.0",
+    "ts-node": "8.10.2",
+    "tslint": "6.1.3",
+    "typescript": "4.3.2",
+    "yaml": "^1.10.2",
+    "zx": "1.14.2"
+  },
+  "dependencies": {
+    "@aws-prototype/infra": "^0.0.0",
+    "aws-cdk-lib": "^2.33.0",
+    "common-tags": "^1.8.0",
+    "constructs": "^10.1.51",
+    "esbuild": "^0.14.49",
+    "source-map-support": "^0.5.21"
+  }
+}

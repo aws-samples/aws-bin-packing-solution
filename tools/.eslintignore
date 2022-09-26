@@ -1,0 +1,6 @@
+node_modules/
+**/nodes_modules/
+**/dist
+**/cdk.out
+**/scripts/
+lib/

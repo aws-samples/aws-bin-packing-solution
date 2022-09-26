@@ -1,0 +1,52 @@
+{
+  "name": "aws-prototype",
+  "version": "0.0.0",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "scripts": {
+    "prebuild": "npx lerna bootstrap",
+    "build": "npx lerna exec yarn run build && yarn run cfn-nag && yarn run lint && yarn audit",
+    "todo": "\"prepare\": \"husky install\",",
+    "lint": "npx lerna exec yarn run lint",
+    "lint:fix": "npx lerna exec yarn run lint:fix",
+    "license:check": "npx ts-node scripts/check-licenses.ts",
+    "clean": "npx lerna exec yarn run clean && rm -rf node_modules",
+    "cfn-nag": "cd ../../tools && yarn run cfn-nag --target ../application/typescript/packages/@aws-prototype/cicd && cd ../application/typescript",
+    "start": "npx lerna exec --scope @aws-prototype/website -- yarn run start",
+    "synth": "npx lerna exec --scope @aws-prototype/cicd -- yarn run synth"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^7.27.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-config-standard-react": "^9.2.0",
+    "eslint-plugin-header": "^3.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.17.0",
+    "eslint-plugin-standard": "^4.0.1",
+    "husky": "^6.0.0",
+    "lerna": "^5.1.8",
+    "license-checker": "^25.0.1",
+    "prettier": "^2.0.4",
+    "typescript": "^4.3.2"
+  },
+  "resolutions": {
+    "lerna/**/trim-newlines": "^3.0.1",
+    "lerna/**/normalize-url": "^4.5.1",
+    "lerna/**/tar": "^6.1.9",
+    "lerna/**/ansi-regex": "^5.0.1",
+    "lerna/**/node-fetch": "^2.6.7",
+    "lerna/**/json-schema": "^0.4.0"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/@aws-prototype/*"
+    ]
+  }
+}

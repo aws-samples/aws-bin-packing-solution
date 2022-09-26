@@ -1,0 +1,36 @@
+{
+  "name": "@aws-prototype/infra",
+  "version": "0.0.0",
+  "bin": {
+    "solution-infra": "bin/infra.js"
+  },
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf cdk.out dist node_modules",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "lint": "eslint --max-warnings 0  .",
+    "lint:fix": "eslint --fix ."
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.10",
+    "@types/node": "10.17.27",
+    "aws-cdk": "^2.33.0",
+    "jest": "^26.4.2",
+    "ts-jest": "^26.2.0",
+    "ts-node": "^9.0.0",
+    "typescript": "~3.9.7"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigatewayv2-alpha": "^2.33.0-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-authorizers-alpha": "^2.33.0-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.33.0-alpha.0",
+    "@aws-prototype/website": "0.0.0",
+    "aws-cdk-lib": "^2.33.0",
+    "constructs": "^10.1.51",
+    "esbuild": "0",
+    "source-map-support": "^0.5.21"
+  }
+}

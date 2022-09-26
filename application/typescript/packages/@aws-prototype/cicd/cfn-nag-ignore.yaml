@@ -1,0 +1,13 @@
+# Define any CFN Nag Ignore Rules here
+# https://github.com/stelligent/cfn_nag#results-filtering
+---
+RulesToSuppress:
+    - id: F2000 # user not being a member of a group
+      reason: >-
+        IAM Users are last resort due to roles being used for most things.
+        in the rare case we need users (gitlab itegration) they will have individually controlled permissions
+    - id: F11 # user not being a member of a group
+      reason: >-
+        IAM Users are last resort due to roles being used for most things.
+        in the rare case we need users (gitlab itegration) they will have individually controlled permissions
+

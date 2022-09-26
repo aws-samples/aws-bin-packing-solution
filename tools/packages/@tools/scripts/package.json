@@ -1,0 +1,18 @@
+{
+  "name": "@tools/scripts",
+  "version": "0.0.0",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "type": "module",
+  "scripts": {
+    "build": "echo '@tools/scripts: Nothing to build!'",
+    "clean": "rm -rf node_modules",
+    "cfn-nag": "npx zx bin/cfn-nag.ts"
+  },
+  "devDependencies": {
+    "@tools/cfn-nag": "*",
+    "typescript": "4.3.2",
+    "zx": "1.14.2"
+  },
+  "dependencies": {}
+}

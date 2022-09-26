@@ -1,0 +1,17 @@
+#!/bin/bash
+
+proto_install() {
+  yarn install --frozen-lockfile
+}
+
+proto_build() {
+   yarn run build
+}
+
+proto_clean() {
+   yarn run clean
+}
+
+proto_synth() {
+   yarn run synth
+}

@@ -1,0 +1,4055 @@
+Metadata:
+  cdk_nag:
+    rules_to_suppress:
+      - id: AwsSolutions-IAM5
+        reason: All Policies have been scoped to a Bucket. Given Buckets can contain arbitrary content, wildcard resources with bucket scope are required.
+        applies_to:
+          - regex: /^Action::s3:.*$/g
+          - regex: /^Resource::.*$/g
+      - id: AwsSolutions-IAM4
+        reason: AWSLambdaBasicExecutionRole is added by CDK lambda construct
+        applies_to:
+          - regex: /^Policy::(.*)service-role/AWSLambdaBasicExecutionRole$/g
+      - id: AwsSolutions-L1
+        reason: Latest runtime cannot be configured. CDK will need to upgrade its deployment constructs accordingly.
+Resources:
+  storageaccesslogbucketA5D0915B:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: LogDeliveryWrite
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: aws-cdk:auto-delete-objects
+          Value: "true"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/access-log-bucket/Resource
+      cdk_nag:
+        rules_to_suppress:
+          - id: AwsSolutions-S1
+            reason: access log bucket
+  storageaccesslogbucketPolicy2B5C6FFD:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: storageaccesslogbucketA5D0915B
+      PolicyDocument:
+        Statement:
+          - Action: s3:*
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+            Effect: Deny
+            Principal:
+              AWS: "*"
+            Resource:
+              - Fn::GetAtt:
+                  - storageaccesslogbucketA5D0915B
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storageaccesslogbucketA5D0915B
+                        - Arn
+                    - /*
+          - Action:
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::GetAtt:
+                  - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+                  - Arn
+            Resource:
+              - Fn::GetAtt:
+                  - storageaccesslogbucketA5D0915B
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storageaccesslogbucketA5D0915B
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/access-log-bucket/Policy/Resource
+  storageaccesslogbucketAutoDeleteObjectsCustomResource656E9C1F:
+    Type: Custom::S3AutoDeleteObjects
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F
+          - Arn
+      BucketName:
+        Ref: storageaccesslogbucketA5D0915B
+    DependsOn:
+      - storageaccesslogbucketPolicy2B5C6FFD
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/access-log-bucket/AutoDeleteObjectsCustomResource/Default
+  storageuihostingbucketB2F58A5E:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - HEAD
+            AllowedOrigins:
+              - "*"
+      LoggingConfiguration:
+        DestinationBucketName:
+          Ref: storageaccesslogbucketA5D0915B
+        LogFilePrefix: ui-hosting-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: aws-cdk:auto-delete-objects
+          Value: "true"
+        - Key: aws-cdk:cr-owned:webui:8b5519c5
+          Value: "true"
+        - Key: aws-cdk:cr-owned:webui:919e7eea
+          Value: "true"
+      WebsiteConfiguration:
+        IndexDocument: index.html
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/ui-hosting-bucket/Resource
+      cdk_nag:
+        rules_to_suppress:
+          - id: AwsSolutions-S5
+            reason: The permissions are added by CDK grantRead method
+  storageuihostingbucketPolicy953139E3:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: storageuihostingbucketB2F58A5E
+      PolicyDocument:
+        Statement:
+          - Action: s3:*
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+            Effect: Deny
+            Principal:
+              AWS: "*"
+            Resource:
+              - Fn::GetAtt:
+                  - storageuihostingbucketB2F58A5E
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storageuihostingbucketB2F58A5E
+                        - Arn
+                    - /*
+          - Action:
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::GetAtt:
+                  - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+                  - Arn
+            Resource:
+              - Fn::GetAtt:
+                  - storageuihostingbucketB2F58A5E
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storageuihostingbucketB2F58A5E
+                        - Arn
+                    - /*
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+            Effect: Allow
+            Principal:
+              CanonicalUser:
+                Fn::GetAtt:
+                  - webAppOAIEDC021AF
+                  - S3CanonicalUserId
+            Resource:
+              - Fn::GetAtt:
+                  - storageuihostingbucketB2F58A5E
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storageuihostingbucketB2F58A5E
+                        - Arn
+                    - /*
+          - Action: s3:GetObject
+            Effect: Allow
+            Principal:
+              CanonicalUser:
+                Fn::GetAtt:
+                  - webAppOAIEDC021AF
+                  - S3CanonicalUserId
+            Resource:
+              Fn::Join:
+                - ""
+                - - Fn::GetAtt:
+                      - storageuihostingbucketB2F58A5E
+                      - Arn
+                  - /*
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/ui-hosting-bucket/Policy/Resource
+  storageuihostingbucketAutoDeleteObjectsCustomResource72D98421:
+    Type: Custom::S3AutoDeleteObjects
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F
+          - Arn
+      BucketName:
+        Ref: storageuihostingbucketB2F58A5E
+    DependsOn:
+      - storageuihostingbucketPolicy953139E3
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/ui-hosting-bucket/AutoDeleteObjectsCustomResource/Default
+  storageWebsiteIndexBucket7735E2D5:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LoggingConfiguration:
+        DestinationBucketName:
+          Ref: storageaccesslogbucketA5D0915B
+        LogFilePrefix: website-index-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: aws-cdk:auto-delete-objects
+          Value: "true"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/WebsiteIndexBucket/Resource
+  storageWebsiteIndexBucketPolicy68480220:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: storageWebsiteIndexBucket7735E2D5
+      PolicyDocument:
+        Statement:
+          - Action: s3:*
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+            Effect: Deny
+            Principal:
+              AWS: "*"
+            Resource:
+              - Fn::GetAtt:
+                  - storageWebsiteIndexBucket7735E2D5
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storageWebsiteIndexBucket7735E2D5
+                        - Arn
+                    - /*
+          - Action:
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::GetAtt:
+                  - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+                  - Arn
+            Resource:
+              - Fn::GetAtt:
+                  - storageWebsiteIndexBucket7735E2D5
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storageWebsiteIndexBucket7735E2D5
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/WebsiteIndexBucket/Policy/Resource
+  storageWebsiteIndexBucketAutoDeleteObjectsCustomResourceFD830FDB:
+    Type: Custom::S3AutoDeleteObjects
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F
+          - Arn
+      BucketName:
+        Ref: storageWebsiteIndexBucket7735E2D5
+    DependsOn:
+      - storageWebsiteIndexBucketPolicy68480220
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/WebsiteIndexBucket/AutoDeleteObjectsCustomResource/Default
+  storagestoragebucketC6081A25:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LoggingConfiguration:
+        DestinationBucketName:
+          Ref: storageaccesslogbucketA5D0915B
+        LogFilePrefix: storage-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: aws-cdk:auto-delete-objects
+          Value: "true"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/storage-bucket/Resource
+  storagestoragebucketPolicy7B455A17:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: storagestoragebucketC6081A25
+      PolicyDocument:
+        Statement:
+          - Action: s3:*
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+            Effect: Deny
+            Principal:
+              AWS: "*"
+            Resource:
+              - Fn::GetAtt:
+                  - storagestoragebucketC6081A25
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storagestoragebucketC6081A25
+                        - Arn
+                    - /*
+          - Action:
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::GetAtt:
+                  - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+                  - Arn
+            Resource:
+              - Fn::GetAtt:
+                  - storagestoragebucketC6081A25
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storagestoragebucketC6081A25
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/storage-bucket/Policy/Resource
+  storagestoragebucketAutoDeleteObjectsCustomResource98245C75:
+    Type: Custom::S3AutoDeleteObjects
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F
+          - Arn
+      BucketName:
+        Ref: storagestoragebucketC6081A25
+    DependsOn:
+      - storagestoragebucketPolicy7B455A17
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/storage/storage-bucket/AutoDeleteObjectsCustomResource/Default
+  CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role
+  CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: e57c1acaa363d7d2b81736776007a7091bc73dff4aeb8135627c4511a51e7dca.zip
+      Timeout: 900
+      MemorySize: 128
+      Handler: __entrypoint__.handler
+      Role:
+        Fn::GetAtt:
+          - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+          - Arn
+      Runtime: nodejs14.x
+      Description:
+        Fn::Join:
+          - ""
+          - - "Lambda function for auto-deleting objects in "
+            - Ref: storageaccesslogbucketA5D0915B
+            - " S3 bucket."
+    DependsOn:
+      - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler
+      aws:asset:path: asset.e57c1acaa363d7d2b81736776007a7091bc73dff4aeb8135627c4511a51e7dca
+      aws:asset:property: Code
+  websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnServiceRoleCC39B93C:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/websiteIndexBuilderHandler/websiteIndexBuilderHandlerFn/ServiceRole/Resource
+  websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnServiceRoleDefaultPolicyB8653638:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+              - s3:Abort*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - storageWebsiteIndexBucket7735E2D5
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storageWebsiteIndexBucket7735E2D5
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+      PolicyName: websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnServiceRoleDefaultPolicyB8653638
+      Roles:
+        - Ref: websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnServiceRoleCC39B93C
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/websiteIndexBuilderHandler/websiteIndexBuilderHandlerFn/ServiceRole/DefaultPolicy/Resource
+  websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnFE0B79D6:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: 56fc6483531f7793848562b13ad40927298c61dd6a35cff6c9c7050d56ebd59e.zip
+      Role:
+        Fn::GetAtt:
+          - websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnServiceRoleCC39B93C
+          - Arn
+      Environment:
+        Variables:
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+      Handler: index.handler
+      MemorySize: 256
+      Runtime: nodejs16.x
+      Timeout: 10
+    DependsOn:
+      - websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnServiceRoleDefaultPolicyB8653638
+      - websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnServiceRoleCC39B93C
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/websiteIndexBuilderHandler/websiteIndexBuilderHandlerFn/Resource
+      aws:asset:path: asset.56fc6483531f7793848562b13ad40927298c61dd6a35cff6c9c7050d56ebd59e
+      aws:asset:is-bundled: true
+      aws:asset:property: Code
+  webAppOAIEDC021AF:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: OAI for Web Interface
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webApp/OAI/Resource
+  webAppWebACLWebACLCreateCustomResourcePolicy34739354:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: wafv2:CreateWebACL
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: webAppWebACLWebACLCreateCustomResourcePolicy34739354
+      Roles:
+        - Ref: AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webApp/WebACL/WebACL-Create/CustomResourcePolicy/Resource
+  webAppWebACLWebACLCreate69A90198:
+    Type: Custom::AWS
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - AWS679f53fac002430cb0da5b7982bd22872D164C4C
+          - Arn
+      Create: '{"service":"WAFV2","action":"createWebACL","parameters":{"Name":"c8c2c5cfd56021605ef277d6c174bb10e14c6dbe9f-WebAcl","DefaultAction":{"Allow":{}},"Scope":"CLOUDFRONT","VisibilityConfig":{"CloudWatchMetricsEnabled":true,"MetricName":"WebACL","SampledRequestsEnabled":true},"Rules":[{"Name":"AWS-AWSManagedRulesCommonRuleSet","Priority":0,"Statement":{"ManagedRuleGroupStatement":{"VendorName":"AWS","Name":"AWSManagedRulesCommonRuleSet"}},"OverrideAction":{"None":{}},"VisibilityConfig":{"MetricName":"AWS-AWSManagedRulesCommonRuleSet","CloudWatchMetricsEnabled":true,"SampledRequestsEnabled":true}}]},"region":"us-east-1","physicalResourceId":{"responsePath":"Summary.Id"}}'
+      InstallLatestAwsSdk: true
+    DependsOn:
+      - webAppWebACLWebACLCreateCustomResourcePolicy34739354
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webApp/WebACL/WebACL-Create/Resource/Default
+  webAppWebACLWebACLDeleteCustomResourcePolicyE920F161:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: wafv2:GetWebACL
+            Effect: Allow
+            Resource: "*"
+          - Action: wafv2:DeleteWebACL
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: webAppWebACLWebACLDeleteCustomResourcePolicyE920F161
+      Roles:
+        - Ref: AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webApp/WebACL/WebACL-Delete/CustomResourcePolicy/Resource
+  webAppWebACLWebACLDelete7184E12D:
+    Type: Custom::AWS
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - AWS679f53fac002430cb0da5b7982bd22872D164C4C
+          - Arn
+      Create:
+        Fn::Join:
+          - ""
+          - - '{"service":"WAFV2","action":"getWebACL","parameters":{"Name":"c8c2c5cfd56021605ef277d6c174bb10e14c6dbe9f-WebAcl","Scope":"CLOUDFRONT","Id":"'
+            - Fn::GetAtt:
+                - webAppWebACLWebACLCreate69A90198
+                - Summary.Id
+            - '"},"region":"us-east-1","physicalResourceId":{"responsePath":"LockToken"}}'
+      Delete:
+        Fn::Join:
+          - ""
+          - - '{"service":"WAFV2","action":"deleteWebACL","parameters":{"Name":"c8c2c5cfd56021605ef277d6c174bb10e14c6dbe9f-WebAcl","Scope":"CLOUDFRONT","Id":"'
+            - Fn::GetAtt:
+                - webAppWebACLWebACLCreate69A90198
+                - Summary.Id
+            - '","LockToken":"PHYSICAL:RESOURCEID:"},"region":"us-east-1"}'
+      InstallLatestAwsSdk: true
+    DependsOn:
+      - webAppWebACLWebACLDeleteCustomResourcePolicyE920F161
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webApp/WebACL/WebACL-Delete/Resource/Default
+  webAppDistributionLogBucketA95D93F3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LoggingConfiguration:
+        LogFilePrefix: access-logs
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: aws-cdk:auto-delete-objects
+          Value: "true"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webApp/DistributionLogBucket/Resource
+  webAppDistributionLogBucketPolicy026DD67F:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: webAppDistributionLogBucketA95D93F3
+      PolicyDocument:
+        Statement:
+          - Action: s3:*
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+            Effect: Deny
+            Principal:
+              AWS: "*"
+            Resource:
+              - Fn::GetAtt:
+                  - webAppDistributionLogBucketA95D93F3
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - webAppDistributionLogBucketA95D93F3
+                        - Arn
+                    - /*
+          - Action:
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::GetAtt:
+                  - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+                  - Arn
+            Resource:
+              - Fn::GetAtt:
+                  - webAppDistributionLogBucketA95D93F3
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - webAppDistributionLogBucketA95D93F3
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webApp/DistributionLogBucket/Policy/Resource
+  webAppDistributionLogBucketAutoDeleteObjectsCustomResource88D39320:
+    Type: Custom::S3AutoDeleteObjects
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F
+          - Arn
+      BucketName:
+        Ref: webAppDistributionLogBucketA95D93F3
+    DependsOn:
+      - webAppDistributionLogBucketPolicy026DD67F
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webApp/DistributionLogBucket/AutoDeleteObjectsCustomResource/Default
+  webAppwebdistributionCFDistribution37C78774:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          ForwardedValues:
+            Cookies:
+              Forward: none
+            QueryString: false
+          TargetOriginId: origin1
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: true
+        Logging:
+          Bucket:
+            Fn::GetAtt:
+              - webAppDistributionLogBucketA95D93F3
+              - RegionalDomainName
+          IncludeCookies: false
+        Origins:
+          - ConnectionAttempts: 3
+            ConnectionTimeout: 10
+            DomainName:
+              Fn::GetAtt:
+                - storageuihostingbucketB2F58A5E
+                - RegionalDomainName
+            Id: origin1
+            OriginPath: /webui
+            S3OriginConfig:
+              OriginAccessIdentity:
+                Fn::Join:
+                  - ""
+                  - - origin-access-identity/cloudfront/
+                    - Ref: webAppOAIEDC021AF
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+        WebACLId:
+          Fn::Join:
+            - ""
+            - - "arn:aws:wafv2:us-east-1:"
+              - Ref: AWS::AccountId
+              - :global/webacl/c8c2c5cfd56021605ef277d6c174bb10e14c6dbe9f-WebAcl/
+              - Fn::GetAtt:
+                  - webAppWebACLWebACLCreate69A90198
+                  - Summary.Id
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webApp/web-distribution/CFDistribution
+      cdk_nag:
+        rules_to_suppress:
+          - id: AwsSolutions-CFR4
+            reason: Certificate is not mandatory therefore the Cloudfront certificate will be used.
+  AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource
+  AWS679f53fac002430cb0da5b7982bd22872D164C4C:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: 6dbd112fe448437b3438da4382c72fccbb7d2ee1543db222620d7447fffebc50.zip
+      Role:
+        Fn::GetAtt:
+          - AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2
+          - Arn
+      Handler: index.handler
+      Runtime: nodejs14.x
+      Timeout: 120
+    DependsOn:
+      - AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/AWS679f53fac002430cb0da5b7982bd2287/Resource
+      aws:asset:path: asset.6dbd112fe448437b3438da4382c72fccbb7d2ee1543db222620d7447fffebc50
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  identityuserpool55C892B0:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      AutoVerifiedAttributes:
+        - email
+      EmailVerificationMessage: The verification code to your new account is {####}
+      EmailVerificationSubject: Verify your new account
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+      Schema:
+        - Mutable: true
+          Name: given_name
+          Required: true
+        - Mutable: true
+          Name: family_name
+          Required: true
+        - AttributeDataType: String
+          Mutable: true
+          Name: country
+        - AttributeDataType: String
+          Mutable: true
+          Name: city
+        - AttributeDataType: String
+          Mutable: true
+          Name: isAdmin
+      SmsVerificationMessage: The verification code to your new account is {####}
+      UsernameAttributes:
+        - email
+      UserPoolAddOns:
+        AdvancedSecurityMode: ENFORCED
+      UserPoolName: binpacking-solution-user-pool
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_CODE
+        EmailMessage: The verification code to your new account is {####}
+        EmailSubject: Verify your new account
+        SmsMessage: The verification code to your new account is {####}
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/identity/userpool/Resource
+  identityuserpooluserpoolclient5D26B4BF:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId:
+        Ref: identityuserpool55C892B0
+      AllowedOAuthFlows:
+        - implicit
+        - code
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - openid
+        - email
+        - aws.cognito.signin.user.admin
+      CallbackURLs:
+        - Fn::Join:
+            - ""
+            - - https://
+              - Fn::GetAtt:
+                  - webAppwebdistributionCFDistribution37C78774
+                  - DomainName
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_CUSTOM_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      GenerateSecret: false
+      ReadAttributes:
+        - address
+        - birthdate
+        - custom:city
+        - custom:country
+        - custom:isAdmin
+        - email
+        - email_verified
+        - family_name
+        - gender
+        - given_name
+        - locale
+        - middle_name
+        - name
+        - nickname
+        - phone_number
+        - phone_number_verified
+        - picture
+        - preferred_username
+        - profile
+        - updated_at
+        - website
+        - zoneinfo
+      SupportedIdentityProviders:
+        - COGNITO
+      WriteAttributes:
+        - address
+        - birthdate
+        - custom:city
+        - custom:country
+        - email
+        - family_name
+        - gender
+        - given_name
+        - locale
+        - middle_name
+        - name
+        - nickname
+        - phone_number
+        - picture
+        - preferred_username
+        - profile
+        - updated_at
+        - website
+        - zoneinfo
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/identity/userpool/userpool-client/Resource
+  databasesContainerTypes7A9B84EB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: expiry
+        Enabled: true
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/databases/ContainerTypes/Resource
+  databasesItemTypes80F61568:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: expiry
+        Enabled: true
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/databases/ItemTypes/Resource
+  databasesTags4D3F1084:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: expiry
+        Enabled: true
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/databases/Tags/Resource
+  databasesShipments9F4147A7:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: expiry
+        Enabled: true
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/databases/Shipments/Resource
+  databasesManifestsD308692E:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+        - AttributeName: shipmentId
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: MANIFEST_SHIPMENT_INDEX
+          KeySchema:
+            - AttributeName: shipmentId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TimeToLiveSpecification:
+        AttributeName: expiry
+        Enabled: true
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/databases/Manifests/Resource
+  databasesPackingContainersC2DE58D7:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+        - AttributeName: manifestId
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: PACKING_CONTAINERS_MANIFEST_INDEX
+          KeySchema:
+            - AttributeName: manifestId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TimeToLiveSpecification:
+        AttributeName: expiry
+        Enabled: true
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/databases/PackingContainers/Resource
+  databasesPackingItems86F93A6F:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+        - AttributeName: manifestId
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: PACKING_ITEMS_MANIFEST_INDEX
+          KeySchema:
+            - AttributeName: manifestId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TimeToLiveSpecification:
+        AttributeName: expiry
+        Enabled: true
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/databases/PackingItems/Resource
+  databasesSubscriptions5001407B:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: topic
+          KeyType: HASH
+        - AttributeName: connectionId
+          KeyType: RANGE
+      AttributeDefinitions:
+        - AttributeName: topic
+          AttributeType: S
+        - AttributeName: connectionId
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: SUBSCRIPTION_CONNECTION_INDEX
+          KeySchema:
+            - AttributeName: connectionId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: expiry
+        Enabled: true
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/databases/Subscriptions/Resource
+  EBAFITSolverConstructSolverEBAFITFunctionServiceRole98B0A5BF:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy
+      Tags:
+        - Key: Name
+          Value: EB AFIT Solver
+        - Key: Type
+          Value: Solver
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/EBAFITSolverConstruct/SolverEBAFITFunction/ServiceRole/Resource
+      cdk_nag:
+        rules_to_suppress:
+          - id: AwsSolutions-IAM4
+            reason: CloudWatchLambdaInsightsExecutionRolePolicy is required
+  EBAFITSolverConstructSolverEBAFITFunctionServiceRoleDefaultPolicy8B1138F3:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesManifestsD308692E
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesManifestsD308692E
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesItemTypes80F61568
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesItemTypes80F61568
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesContainerTypes7A9B84EB
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesContainerTypes7A9B84EB
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesTags4D3F1084
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesTags4D3F1084
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesShipments9F4147A7
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesShipments9F4147A7
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesPackingContainersC2DE58D7
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesPackingContainersC2DE58D7
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesPackingItems86F93A6F
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesPackingItems86F93A6F
+                        - Arn
+                    - /index/*
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+              - s3:Abort*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - storagestoragebucketC6081A25
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storagestoragebucketC6081A25
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+      PolicyName: EBAFITSolverConstructSolverEBAFITFunctionServiceRoleDefaultPolicy8B1138F3
+      Roles:
+        - Ref: EBAFITSolverConstructSolverEBAFITFunctionServiceRole98B0A5BF
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/EBAFITSolverConstruct/SolverEBAFITFunction/ServiceRole/DefaultPolicy/Resource
+  EBAFITSolverConstructSolverEBAFITFunctionB439A932:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ImageUri:
+          Fn::Sub: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:6575c886149ccd181a52f4ce820f08578b6b21626255ef9b1833b3fcc0be1701
+      Role:
+        Fn::GetAtt:
+          - EBAFITSolverConstructSolverEBAFITFunctionServiceRole98B0A5BF
+          - Arn
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          AWSAccount:
+            Ref: AWS::AccountId
+          AWSRegion:
+            Ref: AWS::Region
+          CognitoPoolId:
+            Ref: identityuserpool55C892B0
+          CognitoAppClientId:
+            Ref: identityuserpooluserpoolclient5D26B4BF
+          ManifestTable:
+            Ref: databasesManifestsD308692E
+          ItemTypeTable:
+            Ref: databasesItemTypes80F61568
+          ContainerTypeTable:
+            Ref: databasesContainerTypes7A9B84EB
+          ShipmentTable:
+            Ref: databasesShipments9F4147A7
+          TagsTable:
+            Ref: databasesTags4D3F1084
+          StorageBucket:
+            Ref: storagestoragebucketC6081A25
+          MaximumPermutations: "3"
+          PackingContainersTable:
+            Ref: databasesPackingContainersC2DE58D7
+          PackingItemsTable:
+            Ref: databasesPackingItems86F93A6F
+          PackingItemsManifestIdIndex: PACKING_ITEMS_MANIFEST_INDEX
+          PackingContainersManifestIdIndex: PACKING_CONTAINERS_MANIFEST_INDEX
+      MemorySize: 10240
+      PackageType: Image
+      Tags:
+        - Key: Name
+          Value: EB AFIT Solver
+        - Key: Type
+          Value: Solver
+      Timeout: 900
+      TracingConfig:
+        Mode: Active
+    DependsOn:
+      - EBAFITSolverConstructSolverEBAFITFunctionServiceRoleDefaultPolicy8B1138F3
+      - EBAFITSolverConstructSolverEBAFITFunctionServiceRole98B0A5BF
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/EBAFITSolverConstruct/SolverEBAFITFunction/Resource
+      aws:asset:path: asset.6575c886149ccd181a52f4ce820f08578b6b21626255ef9b1833b3fcc0be1701.Solver
+      aws:asset:dockerfile-path: Dockerfile
+      aws:asset:property: Code.ImageUri
+  solverlambdaarnparamBB169DCC:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Value:
+        Fn::GetAtt:
+          - EBAFITSolverConstructSolverEBAFITFunctionB439A932
+          - Arn
+      Name: solver-lambda-arn
+      Tier: Standard
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/solver-lambda-arn-param/Resource
+  apiProxydataApiHandlerFnServiceRole697C87EF:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/apiProxy/dataApiHandlerFn/ServiceRole/Resource
+  apiProxydataApiHandlerFnServiceRoleDefaultPolicy09A86D97:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+            Effect: Allow
+            Resource: "*"
+          - Action: lambda:InvokeFunction
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - EBAFITSolverConstructSolverEBAFITFunctionB439A932
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - EBAFITSolverConstructSolverEBAFITFunctionB439A932
+                        - Arn
+                    - :*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesManifestsD308692E
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesManifestsD308692E
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesItemTypes80F61568
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesItemTypes80F61568
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesContainerTypes7A9B84EB
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesContainerTypes7A9B84EB
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesTags4D3F1084
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesTags4D3F1084
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesShipments9F4147A7
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesShipments9F4147A7
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesPackingContainersC2DE58D7
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesPackingContainersC2DE58D7
+                        - Arn
+                    - /index/*
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesPackingItems86F93A6F
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesPackingItems86F93A6F
+                        - Arn
+                    - /index/*
+          - Action:
+              - lambda:InvokeFunction
+              - lambda:ListTags
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:lambda:"
+                  - Ref: AWS::Region
+                  - ":"
+                  - Ref: AWS::AccountId
+                  - :function:*
+          - Action: lambda:ListFunctions
+            Effect: Allow
+            Resource: "*"
+          - Action: ssm:GetParameter
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:ssm:"
+                  - Ref: AWS::Region
+                  - ":"
+                  - Ref: AWS::AccountId
+                  - :*
+          - Action: ssm:PutParameter
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:ssm:"
+                  - Ref: AWS::Region
+                  - ":"
+                  - Ref: AWS::AccountId
+                  - :*
+          - Action: tag:GetResources
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+              - s3:Abort*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - storagestoragebucketC6081A25
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storagestoragebucketC6081A25
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+      PolicyName: apiProxydataApiHandlerFnServiceRoleDefaultPolicy09A86D97
+      Roles:
+        - Ref: apiProxydataApiHandlerFnServiceRole697C87EF
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/apiProxy/dataApiHandlerFn/ServiceRole/DefaultPolicy/Resource
+  apiProxydataApiHandlerFn1B2324B3:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: 355c524ec02723ac9abc018cc0484d97fa64fa6dbbf129b605b111b2aad2d571.zip
+      Role:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFnServiceRole697C87EF
+          - Arn
+      Environment:
+        Variables:
+          AWSAccount:
+            Ref: AWS::AccountId
+          AWSRegion:
+            Ref: AWS::Region
+          CognitoPoolId:
+            Ref: identityuserpool55C892B0
+          CognitoAppClientId:
+            Ref: identityuserpooluserpoolclient5D26B4BF
+          ManifestTable:
+            Ref: databasesManifestsD308692E
+          ManifestsShipmentIdIndex: MANIFEST_SHIPMENT_INDEX
+          ItemTypeTable:
+            Ref: databasesItemTypes80F61568
+          ContainerTypeTable:
+            Ref: databasesContainerTypes7A9B84EB
+          ShipmentTable:
+            Ref: databasesShipments9F4147A7
+          TagsTable:
+            Ref: databasesTags4D3F1084
+          SolverLambdaFunction:
+            Fn::GetAtt:
+              - EBAFITSolverConstructSolverEBAFITFunctionB439A932
+              - Arn
+          StorageBucket:
+            Ref: storagestoragebucketC6081A25
+          SolverLambdaArnSsmParamName:
+            Ref: solverlambdaarnparamBB169DCC
+          PackingContainersTable:
+            Ref: databasesPackingContainersC2DE58D7
+          PackingItemsTable:
+            Ref: databasesPackingItems86F93A6F
+          PackingItemsManifestIdIndex: PACKING_ITEMS_MANIFEST_INDEX
+          PackingContainersManifestIdIndex: PACKING_CONTAINERS_MANIFEST_INDEX
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+      Handler: index.handler
+      MemorySize: 256
+      Runtime: nodejs16.x
+      Timeout: 10
+      TracingConfig:
+        Mode: Active
+    DependsOn:
+      - apiProxydataApiHandlerFnServiceRoleDefaultPolicy09A86D97
+      - apiProxydataApiHandlerFnServiceRole697C87EF
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/apiProxy/dataApiHandlerFn/Resource
+      aws:asset:path: asset.355c524ec02723ac9abc018cc0484d97fa64fa6dbbf129b605b111b2aad2d571
+      aws:asset:is-bundled: true
+      aws:asset:property: Code
+  apiBinPackingSolutionDataApi36101670:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      CorsConfiguration:
+        AllowHeaders:
+          - Authorization
+          - Content-Type
+          - X-Amz-Date
+          - X-Api-Key
+        AllowMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+        AllowOrigins:
+          - "*"
+        MaxAge: 86400
+      Name: BinPackingSolutionDataApi
+      ProtocolType: HTTP
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/Resource
+  apiBinPackingSolutionDataApiDefaultStage6103DB7C:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      StageName: $default
+      AutoDeploy: true
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/DefaultStage/Resource
+      cdk_nag:
+        rules_to_suppress:
+          - id: AwsSolutions-APIG1
+            reason: Logging is enabled on CfnStage
+  apiBinPackingSolutionDataApiGETcontainertypecontainertypeintegration6EC5C1E4:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--container--type/container-type-integration/Resource
+  apiBinPackingSolutionDataApiGETcontainertypecontainertypeintegrationPermission30BB6C76:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/container/type
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--container--type/container-type-integration-Permission
+  apiBinPackingSolutionDataApiGETcontainertype3DA9807E:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /container/type
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETcontainertypecontainertypeintegration6EC5C1E4
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--container--type/Resource
+  apiBinPackingSolutionDataApiuserpoolauthorizer28B39982:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      AuthorizerType: JWT
+      Name: user-pool-authorizer
+      IdentitySource:
+        - $request.header.Authorization
+      JwtConfiguration:
+        Audience:
+          - Ref: identityuserpooluserpoolclient5D26B4BF
+        Issuer:
+          Fn::Join:
+            - ""
+            - - https://cognito-idp.
+              - Ref: AWS::Region
+              - .amazonaws.com/
+              - Ref: identityuserpool55C892B0
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/user-pool-authorizer/Resource
+  apiBinPackingSolutionDataApiPOSTcontainertypecontainertypeintegrationPermission7AFDA734:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/container/type
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/POST--container--type/container-type-integration-Permission
+  apiBinPackingSolutionDataApiPOSTcontainertype686D8BE2:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: POST /container/type
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETcontainertypecontainertypeintegration6EC5C1E4
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/POST--container--type/Resource
+  apiBinPackingSolutionDataApiGETcontainertypeidcontainertypeintegration10DFA6FE:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--container--type--{id}/container-type-integration/Resource
+  apiBinPackingSolutionDataApiGETcontainertypeidcontainertypeintegrationPermission2E4D3BB3:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/container/type/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--container--type--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiGETcontainertypeidD172A2DD:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /container/type/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETcontainertypeidcontainertypeintegration10DFA6FE
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--container--type--{id}/Resource
+  apiBinPackingSolutionDataApiDELETEcontainertypeidcontainertypeintegrationPermissionDD4DD211:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/container/type/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/DELETE--container--type--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiDELETEcontainertypeid952DAB0B:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: DELETE /container/type/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETcontainertypeidcontainertypeintegration10DFA6FE
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/DELETE--container--type--{id}/Resource
+  apiBinPackingSolutionDataApiPUTcontainertypeidcontainertypeintegrationPermissionAD242FFE:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/container/type/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/PUT--container--type--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiPUTcontainertypeidC104FD00:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: PUT /container/type/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETcontainertypeidcontainertypeintegration10DFA6FE
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/PUT--container--type--{id}/Resource
+  apiBinPackingSolutionDataApiGETitemtypecontainertypeintegration6CC9FF79:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--item--type/container-type-integration/Resource
+  apiBinPackingSolutionDataApiGETitemtypecontainertypeintegrationPermission1EA04217:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/item/type
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--item--type/container-type-integration-Permission
+  apiBinPackingSolutionDataApiGETitemtype34CEC888:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /item/type
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETitemtypecontainertypeintegration6CC9FF79
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--item--type/Resource
+  apiBinPackingSolutionDataApiPOSTitemtypecontainertypeintegrationPermission1ED3EE1B:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/item/type
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/POST--item--type/container-type-integration-Permission
+  apiBinPackingSolutionDataApiPOSTitemtype43C0CBBD:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: POST /item/type
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETitemtypecontainertypeintegration6CC9FF79
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/POST--item--type/Resource
+  apiBinPackingSolutionDataApiGETitemtypeidcontainertypeintegrationAA179684:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--item--type--{id}/container-type-integration/Resource
+  apiBinPackingSolutionDataApiGETitemtypeidcontainertypeintegrationPermissionAD6E66AC:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/item/type/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--item--type--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiGETitemtypeidECA60DFE:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /item/type/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETitemtypeidcontainertypeintegrationAA179684
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--item--type--{id}/Resource
+  apiBinPackingSolutionDataApiDELETEitemtypeidcontainertypeintegrationPermission1EB32F09:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/item/type/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/DELETE--item--type--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiDELETEitemtypeid5720826B:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: DELETE /item/type/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETitemtypeidcontainertypeintegrationAA179684
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/DELETE--item--type--{id}/Resource
+  apiBinPackingSolutionDataApiPUTitemtypeidcontainertypeintegrationPermission758FEA05:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/item/type/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/PUT--item--type--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiPUTitemtypeid544F134E:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: PUT /item/type/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETitemtypeidcontainertypeintegrationAA179684
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/PUT--item--type--{id}/Resource
+  apiBinPackingSolutionDataApiGETmanifestcontainertypeintegration03BCCC30:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--manifest/container-type-integration/Resource
+  apiBinPackingSolutionDataApiGETmanifestcontainertypeintegrationPermission8150F3D6:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/manifest
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--manifest/container-type-integration-Permission
+  apiBinPackingSolutionDataApiGETmanifest070CFE1D:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /manifest
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETmanifestcontainertypeintegration03BCCC30
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--manifest/Resource
+  apiBinPackingSolutionDataApiPOSTmanifestcontainertypeintegrationPermission728DAF6C:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/manifest
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/POST--manifest/container-type-integration-Permission
+  apiBinPackingSolutionDataApiPOSTmanifestB88EF808:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: POST /manifest
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETmanifestcontainertypeintegration03BCCC30
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/POST--manifest/Resource
+  apiBinPackingSolutionDataApiGETmanifestidcontainertypeintegration893719B6:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--manifest--{id}/container-type-integration/Resource
+  apiBinPackingSolutionDataApiGETmanifestidcontainertypeintegrationPermissionA1A5A8F3:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/manifest/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--manifest--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiGETmanifestid775F03A5:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /manifest/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETmanifestidcontainertypeintegration893719B6
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--manifest--{id}/Resource
+  apiBinPackingSolutionDataApiDELETEmanifestidcontainertypeintegrationPermissionF59202B1:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/manifest/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/DELETE--manifest--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiDELETEmanifestidC1F51A90:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: DELETE /manifest/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETmanifestidcontainertypeintegration893719B6
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/DELETE--manifest--{id}/Resource
+  apiBinPackingSolutionDataApiPUTmanifestidcontainertypeintegrationPermission98D9C282:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/manifest/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/PUT--manifest--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiPUTmanifestid66B6FE06:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: PUT /manifest/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETmanifestidcontainertypeintegration893719B6
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/PUT--manifest--{id}/Resource
+  apiBinPackingSolutionDataApiGETmanifestresultidcontainertypeintegrationC5B83257:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--manifest--result--{id}/container-type-integration/Resource
+  apiBinPackingSolutionDataApiGETmanifestresultidcontainertypeintegrationPermission9F0B7119:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/manifest/result/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--manifest--result--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiGETmanifestresultidA7EE909E:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /manifest/result/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETmanifestresultidcontainertypeintegrationC5B83257
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--manifest--result--{id}/Resource
+  apiBinPackingSolutionDataApiGETshipmentshipmentIdmanifestcontainertypeintegrationEED31B32:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--shipment--{shipmentId}--manifest/container-type-integration/Resource
+  apiBinPackingSolutionDataApiGETshipmentshipmentIdmanifestcontainertypeintegrationPermissionFCD40563:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/shipment/{shipmentId}/manifest
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--shipment--{shipmentId}--manifest/container-type-integration-Permission
+  apiBinPackingSolutionDataApiGETshipmentshipmentIdmanifest2528B56E:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /shipment/{shipmentId}/manifest
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETshipmentshipmentIdmanifestcontainertypeintegrationEED31B32
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--shipment--{shipmentId}--manifest/Resource
+  apiBinPackingSolutionDataApiGETshipmentcontainertypeintegrationE28C4951:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--shipment/container-type-integration/Resource
+  apiBinPackingSolutionDataApiGETshipmentcontainertypeintegrationPermissionDC31FB87:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/shipment
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--shipment/container-type-integration-Permission
+  apiBinPackingSolutionDataApiGETshipment60D75715:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /shipment
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETshipmentcontainertypeintegrationE28C4951
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--shipment/Resource
+  apiBinPackingSolutionDataApiPOSTshipmentcontainertypeintegrationPermission21F586B3:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/shipment
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/POST--shipment/container-type-integration-Permission
+  apiBinPackingSolutionDataApiPOSTshipment96C7342C:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: POST /shipment
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETshipmentcontainertypeintegrationE28C4951
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/POST--shipment/Resource
+  apiBinPackingSolutionDataApiGETshipmentidcontainertypeintegration452A4B0A:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--shipment--{id}/container-type-integration/Resource
+  apiBinPackingSolutionDataApiGETshipmentidcontainertypeintegrationPermissionD1889AB6:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/shipment/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--shipment--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiGETshipmentid1E737A5D:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /shipment/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETshipmentidcontainertypeintegration452A4B0A
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--shipment--{id}/Resource
+  apiBinPackingSolutionDataApiDELETEshipmentidcontainertypeintegrationPermission800C5508:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/shipment/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/DELETE--shipment--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiDELETEshipmentid33AAB2D4:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: DELETE /shipment/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETshipmentidcontainertypeintegration452A4B0A
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/DELETE--shipment--{id}/Resource
+  apiBinPackingSolutionDataApiPUTshipmentidcontainertypeintegrationPermission2296D568:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/shipment/{id}
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/PUT--shipment--{id}/container-type-integration-Permission
+  apiBinPackingSolutionDataApiPUTshipmentid3B5B4DA1:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: PUT /shipment/{id}
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETshipmentidcontainertypeintegration452A4B0A
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/PUT--shipment--{id}/Resource
+  apiBinPackingSolutionDataApiGETsolversolverintegrationFA48A544:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--solver/solver-integration/Resource
+  apiBinPackingSolutionDataApiGETsolversolverintegrationPermission7FFB89C5:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/solver
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--solver/solver-integration-Permission
+  apiBinPackingSolutionDataApiGETsolver26B68473:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: GET /solver
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETsolversolverintegrationFA48A544
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/GET--solver/Resource
+  apiBinPackingSolutionDataApiPOSTsolversolverintegrationPermission061A14CE:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - apiProxydataApiHandlerFn1B2324B3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - /*/*/solver
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/POST--solver/solver-integration-Permission
+  apiBinPackingSolutionDataApiPOSTsolver5BCDFCD6:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: apiBinPackingSolutionDataApi36101670
+      RouteKey: POST /solver
+      AuthorizationType: JWT
+      AuthorizerId:
+        Ref: apiBinPackingSolutionDataApiuserpoolauthorizer28B39982
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: apiBinPackingSolutionDataApiGETsolversolverintegrationFA48A544
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/BinPackingSolutionDataApi/POST--solver/Resource
+  apiAccessLogsE8DA0A02:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/AccessLogs/Resource
+  apiAccessLogsPolicyResourcePolicyCB190AF7:
+    Type: AWS::Logs::ResourcePolicy
+    Properties:
+      PolicyDocument:
+        Fn::Join:
+          - ""
+          - - '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Effect":"Allow","Principal":{"Service":"apigateway.amazonaws.com"},"Resource":"'
+            - Fn::GetAtt:
+                - apiAccessLogsE8DA0A02
+                - Arn
+            - '"}],"Version":"2012-10-17"}'
+      PolicyName: BinPackingSolutionStackapiAccessLogsPolicyCAB2C584
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/api/AccessLogs/Policy/ResourcePolicy
+  webSocketConnectionHandlersubscriptionHandlerFnServiceRoleBDE0093B:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketConnectionHandler/subscriptionHandlerFn/ServiceRole/Resource
+  webSocketConnectionHandlersubscriptionHandlerFnServiceRoleDefaultPolicy8B453E74:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesSubscriptions5001407B
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesSubscriptions5001407B
+                        - Arn
+                    - /index/*
+          - Action: execute-api:ManageConnections
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:execute-api:"
+                  - Ref: AWS::Region
+                  - ":"
+                  - Ref: AWS::AccountId
+                  - ":"
+                  - Ref: webSocketApiwebsocketApi8E784138
+                  - /*/POST/@connections/*
+        Version: "2012-10-17"
+      PolicyName: webSocketConnectionHandlersubscriptionHandlerFnServiceRoleDefaultPolicy8B453E74
+      Roles:
+        - Ref: webSocketConnectionHandlersubscriptionHandlerFnServiceRoleBDE0093B
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketConnectionHandler/subscriptionHandlerFn/ServiceRole/DefaultPolicy/Resource
+  webSocketConnectionHandlersubscriptionHandlerFnD36711BB:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: e84c2b8574f98e29b2144e5a6e3b63f11f29e2458c3202505e1bbef39be5edfc.zip
+      Role:
+        Fn::GetAtt:
+          - webSocketConnectionHandlersubscriptionHandlerFnServiceRoleBDE0093B
+          - Arn
+      Environment:
+        Variables:
+          SUBSCRIPTIONS_TABLE_NAME:
+            Ref: databasesSubscriptions5001407B
+          SUBSCRIPTION_CONNECTION_INDEX_NAME: SUBSCRIPTION_CONNECTION_INDEX
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+      Handler: index.handler
+      MemorySize: 256
+      Runtime: nodejs16.x
+      Timeout: 10
+      TracingConfig:
+        Mode: Active
+    DependsOn:
+      - webSocketConnectionHandlersubscriptionHandlerFnServiceRoleDefaultPolicy8B453E74
+      - webSocketConnectionHandlersubscriptionHandlerFnServiceRoleBDE0093B
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketConnectionHandler/subscriptionHandlerFn/Resource
+      aws:asset:path: asset.e84c2b8574f98e29b2144e5a6e3b63f11f29e2458c3202505e1bbef39be5edfc
+      aws:asset:is-bundled: true
+      aws:asset:property: Code
+  customAuthorizerHandlercustomAuthorizerHandlerFnServiceRole0C72564B:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/customAuthorizerHandler/customAuthorizerHandlerFn/ServiceRole/Resource
+  customAuthorizerHandlercustomAuthorizerHandlerFnServiceRoleDefaultPolicy84E436D4:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: customAuthorizerHandlercustomAuthorizerHandlerFnServiceRoleDefaultPolicy84E436D4
+      Roles:
+        - Ref: customAuthorizerHandlercustomAuthorizerHandlerFnServiceRole0C72564B
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/customAuthorizerHandler/customAuthorizerHandlerFn/ServiceRole/DefaultPolicy/Resource
+  customAuthorizerHandlercustomAuthorizerHandlerFn6CECC0EF:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: fdca2450ca1ecd87ea9a19d3df4e396f5a9c3146744292a0ccbf9bdf3eadd456.zip
+      Role:
+        Fn::GetAtt:
+          - customAuthorizerHandlercustomAuthorizerHandlerFnServiceRole0C72564B
+          - Arn
+      Environment:
+        Variables:
+          COGNITO_USER_POOL_ID:
+            Ref: identityuserpool55C892B0
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+      Handler: index.handler
+      MemorySize: 256
+      Runtime: nodejs16.x
+      Timeout: 10
+      TracingConfig:
+        Mode: Active
+    DependsOn:
+      - customAuthorizerHandlercustomAuthorizerHandlerFnServiceRoleDefaultPolicy84E436D4
+      - customAuthorizerHandlercustomAuthorizerHandlerFnServiceRole0C72564B
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/customAuthorizerHandler/customAuthorizerHandlerFn/Resource
+      aws:asset:path: asset.fdca2450ca1ecd87ea9a19d3df4e396f5a9c3146744292a0ccbf9bdf3eadd456
+      aws:asset:is-bundled: true
+      aws:asset:property: Code
+  webSocketApiwebsocketApi8E784138:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: BinPacking Solution Web Socket API
+      ProtocolType: WEBSOCKET
+      RouteSelectionExpression: $request.body.action
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/websocketApi/Resource
+  webSocketApiWebsocketStageBA823ECA:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId:
+        Ref: webSocketApiwebsocketApi8E784138
+      StageName: prod
+      AutoDeploy: true
+    DependsOn:
+      - webSocketApiWebSocketApiConnectRoute95A4869C
+      - webSocketApiWebSocketApiDefaultRouteC70688D3
+      - webSocketApiWebSocketApiDisconnectRouteB01C933B
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/WebsocketStage/Resource
+      cdk_nag:
+        rules_to_suppress:
+          - id: AwsSolutions-APIG1
+            reason: Logging is enabled on CfnStage
+  webSocketApiAccessLogs458630C5:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/AccessLogs/Resource
+  webSocketApiAccessLogsPolicyResourcePolicy236723A5:
+    Type: AWS::Logs::ResourcePolicy
+    Properties:
+      PolicyDocument:
+        Fn::Join:
+          - ""
+          - - '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Effect":"Allow","Principal":{"Service":"apigateway.amazonaws.com"},"Resource":"'
+            - Fn::GetAtt:
+                - webSocketApiAccessLogs458630C5
+                - Arn
+            - '"}],"Version":"2012-10-17"}'
+      PolicyName: BinPackingSolutionStackwebSocketApiAccessLogsPolicyCE6600AF
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/AccessLogs/Policy/ResourcePolicy
+  webSocketApiAPIGatewayCustomAuthorizerRoleD43263E4:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/APIGatewayCustomAuthorizerRole/Resource
+      cdk_nag:
+        rules_to_suppress:
+          - id: AwsSolutions-IAM4
+            reason: AmazonAPIGatewayPushToCloudWatchLogs permission is required
+  webSocketApiAPIGatewayCustomAuthorizerRoleDefaultPolicyD0A81491:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: lambda:InvokeFunction
+            Effect: Allow
+            Resource:
+              Fn::GetAtt:
+                - customAuthorizerHandlercustomAuthorizerHandlerFn6CECC0EF
+                - Arn
+        Version: "2012-10-17"
+      PolicyName: webSocketApiAPIGatewayCustomAuthorizerRoleDefaultPolicyD0A81491
+      Roles:
+        - Ref: webSocketApiAPIGatewayCustomAuthorizerRoleD43263E4
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/APIGatewayCustomAuthorizerRole/DefaultPolicy/Resource
+  webSocketApicustomAuthorizerA9311ECC:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      ApiId:
+        Ref: webSocketApiwebsocketApi8E784138
+      AuthorizerType: REQUEST
+      Name: customAuthorizer
+      AuthorizerCredentialsArn:
+        Fn::GetAtt:
+          - webSocketApiAPIGatewayCustomAuthorizerRoleD43263E4
+          - Arn
+      AuthorizerUri:
+        Fn::Join:
+          - ""
+          - - "arn:aws:apigateway:"
+            - Ref: AWS::Region
+            - :lambda:path/2015-03-31/functions/
+            - Fn::GetAtt:
+                - customAuthorizerHandlercustomAuthorizerHandlerFn6CECC0EF
+                - Arn
+            - /invocations
+      IdentitySource:
+        - route.request.querystring.token
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/customAuthorizer
+  webSocketApiAuthorizerPermissionB7F1E47E:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: customAuthorizerHandlercustomAuthorizerHandlerFn6CECC0EF
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: webSocketApiwebsocketApi8E784138
+            - /*/$connect
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/AuthorizerPermission
+  webSocketApiWebSocketApiConnectIntegrationD4F51988:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: webSocketApiwebsocketApi8E784138
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+      IntegrationUri:
+        Fn::Join:
+          - ""
+          - - "arn:aws:apigateway:"
+            - Ref: AWS::Region
+            - :lambda:path/2015-03-31/functions/
+            - Fn::GetAtt:
+                - webSocketConnectionHandlersubscriptionHandlerFnD36711BB
+                - Arn
+            - /invocations
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/WebSocketApiConnectIntegration
+  webSocketApiConnectRoutePermissionBA8FCB3C:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: webSocketConnectionHandlersubscriptionHandlerFnD36711BB
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: webSocketApiwebsocketApi8E784138
+            - /*/$connect
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/ConnectRoutePermission
+  webSocketApiDisconnectRoutePermissionE21045C1:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: webSocketConnectionHandlersubscriptionHandlerFnD36711BB
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: webSocketApiwebsocketApi8E784138
+            - /*/$disconnect
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/DisconnectRoutePermission
+  webSocketApiDefaultRoutePermission0447EAE2:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: webSocketConnectionHandlersubscriptionHandlerFnD36711BB
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: webSocketApiwebsocketApi8E784138
+            - /*/$default
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/DefaultRoutePermission
+  webSocketApiWebSocketApiConnectRoute95A4869C:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: webSocketApiwebsocketApi8E784138
+      RouteKey: $connect
+      AuthorizationType: CUSTOM
+      AuthorizerId:
+        Ref: webSocketApicustomAuthorizerA9311ECC
+      OperationName: connectRoute
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: webSocketApiWebSocketApiConnectIntegrationD4F51988
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/WebSocketApiConnectRoute
+  webSocketApiWebSocketApiDisconnectRouteB01C933B:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: webSocketApiwebsocketApi8E784138
+      RouteKey: $disconnect
+      OperationName: disconnectRoute
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: webSocketApiWebSocketApiConnectIntegrationD4F51988
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/WebSocketApiDisconnectRoute
+      cdk_nag:
+        rules_to_suppress:
+          - id: AwsSolutions-APIG4
+            reason: The authorization is only required in the $connect
+  webSocketApiWebSocketApiDefaultRouteC70688D3:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: webSocketApiwebsocketApi8E784138
+      RouteKey: $default
+      OperationName: defaultRoute
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: webSocketApiWebSocketApiConnectIntegrationD4F51988
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webSocketApi/WebSocketApiDefaultRoute
+      cdk_nag:
+        rules_to_suppress:
+          - id: AwsSolutions-APIG4
+            reason: The authorization is only required in the $connect
+  dynamoDBStreamHandlersubscriptionHandlerFnServiceRoleC52100F8:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/dynamoDBStreamHandler/subscriptionHandlerFn/ServiceRole/Resource
+  dynamoDBStreamHandlersubscriptionHandlerFnServiceRoleDefaultPolicy2F3CC055:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:DescribeStream
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:CreateTable
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - databasesSubscriptions5001407B
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - databasesSubscriptions5001407B
+                        - Arn
+                    - /index/*
+          - Action: dynamodb:ListStreams
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - dynamodb:DescribeStream
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+            Effect: Allow
+            Resource:
+              Fn::GetAtt:
+                - databasesManifestsD308692E
+                - StreamArn
+          - Action: execute-api:ManageConnections
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:execute-api:"
+                  - Ref: AWS::Region
+                  - ":"
+                  - Ref: AWS::AccountId
+                  - ":"
+                  - Ref: webSocketApiwebsocketApi8E784138
+                  - /*/POST/@connections/*
+        Version: "2012-10-17"
+      PolicyName: dynamoDBStreamHandlersubscriptionHandlerFnServiceRoleDefaultPolicy2F3CC055
+      Roles:
+        - Ref: dynamoDBStreamHandlersubscriptionHandlerFnServiceRoleC52100F8
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/dynamoDBStreamHandler/subscriptionHandlerFn/ServiceRole/DefaultPolicy/Resource
+  dynamoDBStreamHandlersubscriptionHandlerFnC4662B2C:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: e84c2b8574f98e29b2144e5a6e3b63f11f29e2458c3202505e1bbef39be5edfc.zip
+      Role:
+        Fn::GetAtt:
+          - dynamoDBStreamHandlersubscriptionHandlerFnServiceRoleC52100F8
+          - Arn
+      Environment:
+        Variables:
+          SUBSCRIPTIONS_TABLE_NAME:
+            Ref: databasesSubscriptions5001407B
+          SUBSCRIPTION_CONNECTION_INDEX_NAME: SUBSCRIPTION_CONNECTION_INDEX
+          WEBSOCKET_URL:
+            Fn::Join:
+              - ""
+              - - wss://
+                - Ref: webSocketApiwebsocketApi8E784138
+                - .execute-api.
+                - Ref: AWS::Region
+                - "."
+                - Ref: AWS::URLSuffix
+                - /prod
+          MANIFEST_TABLE_ARN:
+            Fn::GetAtt:
+              - databasesManifestsD308692E
+              - Arn
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+      Handler: index.handler
+      MemorySize: 256
+      Runtime: nodejs16.x
+      Timeout: 10
+      TracingConfig:
+        Mode: Active
+    DependsOn:
+      - dynamoDBStreamHandlersubscriptionHandlerFnServiceRoleDefaultPolicy2F3CC055
+      - dynamoDBStreamHandlersubscriptionHandlerFnServiceRoleC52100F8
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/dynamoDBStreamHandler/subscriptionHandlerFn/Resource
+      aws:asset:path: asset.e84c2b8574f98e29b2144e5a6e3b63f11f29e2458c3202505e1bbef39be5edfc
+      aws:asset:is-bundled: true
+      aws:asset:property: Code
+  dynamoDBStreamHandlersubscriptionHandlerFnDynamoDBEventSourceBinPackingSolutionStackdatabasesManifestsE36FDBD68CAB3080:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      FunctionName:
+        Ref: dynamoDBStreamHandlersubscriptionHandlerFnC4662B2C
+      BatchSize: 100
+      EventSourceArn:
+        Fn::GetAtt:
+          - databasesManifestsD308692E
+          - StreamArn
+      MaximumRetryAttempts: 5
+      StartingPosition: TRIM_HORIZON
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/dynamoDBStreamHandler/subscriptionHandlerFn/DynamoDBEventSource:BinPackingSolutionStackdatabasesManifestsE36FDBD6/Resource
+  webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEventServiceRole4AA06E89:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webAppDeployment/BuildWebsiteIndexCustomResourceProvider/framework-onEvent/ServiceRole/Resource
+  webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy8AF64F0B:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: lambda:InvokeFunction
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnFE0B79D6
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnFE0B79D6
+                        - Arn
+                    - :*
+        Version: "2012-10-17"
+      PolicyName: webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy8AF64F0B
+      Roles:
+        - Ref: webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEventServiceRole4AA06E89
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webAppDeployment/BuildWebsiteIndexCustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource
+  webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEvent41E43E60:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: e7c95e1a12d903d913ebdd526c735f1ac58b2024882a5562110221fe685ebe85.zip
+      Role:
+        Fn::GetAtt:
+          - webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEventServiceRole4AA06E89
+          - Arn
+      Description: AWS CDK resource provider framework - onEvent (BinPackingSolutionStack/webAppDeployment/BuildWebsiteIndexCustomResourceProvider)
+      Environment:
+        Variables:
+          USER_ON_EVENT_FUNCTION_ARN:
+            Fn::GetAtt:
+              - websiteIndexBuilderHandlerwebsiteIndexBuilderHandlerFnFE0B79D6
+              - Arn
+      Handler: framework.onEvent
+      Runtime: nodejs14.x
+      Timeout: 900
+    DependsOn:
+      - webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy8AF64F0B
+      - webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEventServiceRole4AA06E89
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webAppDeployment/BuildWebsiteIndexCustomResourceProvider/framework-onEvent/Resource
+      aws:asset:path: asset.e7c95e1a12d903d913ebdd526c735f1ac58b2024882a5562110221fe685ebe85
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEventLogRetention835B1864:
+    Type: Custom::LogRetention
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A
+          - Arn
+      LogGroupName:
+        Fn::Join:
+          - ""
+          - - /aws/lambda/
+            - Ref: webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEvent41E43E60
+      RetentionInDays: 1
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webAppDeployment/BuildWebsiteIndexCustomResourceProvider/framework-onEvent/LogRetention/Resource
+  webAppDeploymentBuildWebsiteIndexCustomResourceA028F0C1:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - webAppDeploymentBuildWebsiteIndexCustomResourceProviderframeworkonEvent41E43E60
+          - Arn
+      s3BucketName:
+        Ref: storageWebsiteIndexBucket7735E2D5
+      template: <!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="Web site created using create-react-app"/><link rel="apple-touch-icon" href="/logo192.png"/><link rel="manifest" href="/manifest.json"/><title>Pacman</title><script src="/config.js"></script><script defer="defer" src="/static/js/main.23b8c4f7.js"></script><link href="/static/css/main.fe85b626.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>
+      apiUrl:
+        Fn::Join:
+          - ""
+          - - https://
+            - Ref: apiBinPackingSolutionDataApi36101670
+            - .execute-api.
+            - Ref: AWS::Region
+            - "."
+            - Ref: AWS::URLSuffix
+            - /
+      region:
+        Ref: AWS::Region
+      cognitoUserPoolId:
+        Ref: identityuserpool55C892B0
+      cognitoAppClientId:
+        Ref: identityuserpooluserpoolclient5D26B4BF
+      webSocketUrl:
+        Fn::Join:
+          - ""
+          - - wss://
+            - Ref: webSocketApiwebsocketApi8E784138
+            - .execute-api.
+            - Ref: AWS::Region
+            - "."
+            - Ref: AWS::URLSuffix
+            - /prod
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webAppDeployment/BuildWebsiteIndexCustomResource/Default
+  webAppDeploymentcachedDeployWebsiteAwsCliLayerE37FA644:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      Content:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: ba6af152ce7366ad6f9019e5c6719704a92411a2eb6f3bc1cb39dea393ece19e.zip
+      Description: /opt/awscli/aws
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webAppDeployment/cachedDeployWebsite/AwsCliLayer/Resource
+      aws:asset:path: asset.ba6af152ce7366ad6f9019e5c6719704a92411a2eb6f3bc1cb39dea393ece19e.zip
+      aws:asset:is-bundled: false
+      aws:asset:property: Content
+  webAppDeploymentcachedDeployWebsiteCustomResource91F826CB:
+    Type: Custom::CDKBucketDeployment
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536
+          - Arn
+      SourceBucketNames:
+        - Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+      SourceObjectKeys:
+        - 66c6ccb9172279d2abb37500af07aa7439224d425529183eef71cc4dc1981ef9.zip
+      DestinationBucketName:
+        Ref: storageuihostingbucketB2F58A5E
+      DestinationBucketKeyPrefix: webui
+      Prune: false
+      DistributionId:
+        Ref: webAppwebdistributionCFDistribution37C78774
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webAppDeployment/cachedDeployWebsite/CustomResource/Default
+  webAppDeploymentUncachedDeployWebsiteAwsCliLayer8FC41462:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      Content:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: ba6af152ce7366ad6f9019e5c6719704a92411a2eb6f3bc1cb39dea393ece19e.zip
+      Description: /opt/awscli/aws
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webAppDeployment/UncachedDeployWebsite/AwsCliLayer/Resource
+      aws:asset:path: asset.ba6af152ce7366ad6f9019e5c6719704a92411a2eb6f3bc1cb39dea393ece19e.zip
+      aws:asset:is-bundled: false
+      aws:asset:property: Content
+  webAppDeploymentUncachedDeployWebsiteCustomResource4C28BE8D:
+    Type: Custom::CDKBucketDeployment
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536
+          - Arn
+      SourceBucketNames:
+        - Ref: storageWebsiteIndexBucket7735E2D5
+      SourceObjectKeys:
+        - Ref: webAppDeploymentBuildWebsiteIndexCustomResourceA028F0C1
+      DestinationBucketName:
+        Ref: storageuihostingbucketB2F58A5E
+      DestinationBucketKeyPrefix: webui
+      Prune: false
+      SystemMetadata:
+        cache-control: no-cache
+      DistributionId:
+        Ref: webAppwebdistributionCFDistribution37C78774
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/webAppDeployment/UncachedDeployWebsite/CustomResource/Default
+  LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource
+  LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - logs:PutRetentionPolicy
+              - logs:DeleteRetentionPolicy
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB
+      Roles:
+        - Ref: LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource
+  LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs14.x
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: ae967c277459e8936ac565a71d34ea5dcff7b98e556466c36a4d6da023a2d9aa.zip
+      Role:
+        Fn::GetAtt:
+          - LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB
+          - Arn
+    DependsOn:
+      - LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB
+      - LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource
+      aws:asset:path: asset.ae967c277459e8936ac565a71d34ea5dcff7b98e556466c36a4d6da023a2d9aa
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource
+  CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+            Effect: Allow
+            Resource:
+              - Fn::Join:
+                  - ""
+                  - - "arn:"
+                    - Ref: AWS::Partition
+                    - ":s3:::"
+                    - Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+              - Fn::Join:
+                  - ""
+                  - - "arn:"
+                    - Ref: AWS::Partition
+                    - ":s3:::"
+                    - Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+                    - /*
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+              - s3:Abort*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - storageuihostingbucketB2F58A5E
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storageuihostingbucketB2F58A5E
+                        - Arn
+                    - /*
+          - Action:
+              - cloudfront:GetInvalidation
+              - cloudfront:CreateInvalidation
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - storageWebsiteIndexBucket7735E2D5
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - storageWebsiteIndexBucket7735E2D5
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+      PolicyName: CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF
+      Roles:
+        - Ref: CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource
+  CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da.zip
+      Role:
+        Fn::GetAtt:
+          - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265
+          - Arn
+      Handler: index.handler
+      Layers:
+        - Ref: webAppDeploymentcachedDeployWebsiteAwsCliLayerE37FA644
+      Runtime: python3.7
+      Timeout: 900
+    DependsOn:
+      - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF
+      - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource
+      aws:asset:path: asset.f98b78092dcdd31f5e6d47489beb5f804d4835ef86a8085d0a2053cb9ae711da
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAA/21T247aMBD9Ft6Nly5Sn8tCt0XadlHo5TEyzmzW4NiRLyAa5d8741yI0EqR5uLjM5Mz40e+XPJmMRMXP5fFaa7VgTf7IOSJYSpvPJ4+RXmCwNZvpvc6s7Nayest3cdd8CQ8tEyL6lCI3NgCjp7/TOY5GhmUNUyJijeZ1UAUyd4YO69lfpk3wnsInq/IsAJqba8VmMC7QpsxMZTjDRKMVfbKlBqCvWVGZ2ORwG0rUcKYo9rgKuU9RV/PyLu30Un4IeoaqQjwcfZFXMH9AUcXWya1jcWbs9hn8+pUqcxKSvB+W+BdFdJPrgnzTJiPEePxXzhslA9OHeLQ5DTGarY0Klje/PbgdtZqgoz+4Ky1QurpUZdpWXE1orIFjv6XOHQDSU7LQLq8H8BErm4WeMYzqK3H0u5KE2feV7Q+DjXZCScqCOCSpkPQMlGrUgS4iOv5MY1qVSuC4NKVqfLWBCidGP40szGk/CqGd+vUPyLRtvS8ebHlN2djneQf/Ax8Gs1tme4yiMywFZOka9k6+mCrATPFk/8aQx3DHWjn7FkV+GdJB2qcdkAmTO56EPa3uvg79uFmO7Y5vBFN65Pjm5NacbqoVdqotCjWFKqb9GIudP0u+GL2pX+yD2SnovaI5nsINWlLthOXvE5O8qY6J+yoL8OF29O0A90fg0SCitFz5kf/cP70meO3mB29UnMXUdEKeNbZ/9wVEjxZBAAA
+    Metadata:
+      aws:cdk:path: BinPackingSolutionStack/CDKMetadata/Default
+    Condition: CDKMetadataAvailable
+Outputs:
+  storageWebBucket9C7186E2:
+    Value:
+      Ref: storageuihostingbucketB2F58A5E
+  storageStorageBucket30454622:
+    Value:
+      Ref: storagestoragebucketC6081A25
+  webAppWebAppCloudFrontUrl27AC5E75:
+    Value:
+      Fn::GetAtt:
+        - webAppwebdistributionCFDistribution37C78774
+        - DomainName
+  webAppWebAppCloudFrontDistributionId041A738E:
+    Value:
+      Ref: webAppwebdistributionCFDistribution37C78774
+  identityUserPool0C39F280:
+    Description: User pool Id
+    Value:
+      Ref: identityuserpool55C892B0
+    Export:
+      Name: userPoolId
+  identityUserPoolClient373A7523:
+    Description: User pool client Id
+    Value:
+      Ref: identityuserpooluserpoolclient5D26B4BF
+    Export:
+      Name: userPoolClientId
+  EBAFITSolverConstructEBAFITSolverLambdaARN0E4EE01D:
+    Description: EB-AFIT Solver Lambda ARN
+    Value:
+      Fn::GetAtt:
+        - EBAFITSolverConstructSolverEBAFITFunctionB439A932
+        - Arn
+    Export:
+      Name: EB-AFIT-Solver-Lambda-ARN
+  apiProxyAPILambdaARND82E99E1:
+    Description: API Lambda ARN
+    Value:
+      Fn::GetAtt:
+        - apiProxydataApiHandlerFn1B2324B3
+        - Arn
+    Export:
+      Name: API-Lambda-ARN
+  apiAPI9E1E6886:
+    Description: API ID
+    Value:
+      Ref: apiBinPackingSolutionDataApi36101670
+    Export:
+      Name: ApiId
+  apiAPIArn297EDFF4:
+    Description: API ARN
+    Value:
+      Fn::Join:
+        - ""
+        - - "arn:"
+          - Ref: AWS::Partition
+          - ":apigateway:"
+          - Ref: AWS::Region
+          - ":"
+          - Ref: AWS::AccountId
+          - :apis/
+          - Ref: apiBinPackingSolutionDataApi36101670
+    Export:
+      Name: APIArn
+  apiAPIEndpoint86E48795:
+    Description: API Endpoint
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: apiBinPackingSolutionDataApi36101670
+          - .execute-api.
+          - Ref: AWS::Region
+          - "."
+          - Ref: AWS::URLSuffix
+          - /
+    Export:
+      Name: APIEndpoint
+  webSocketConnectionHandlerSubscriptionLambdaARN8F2BBF6A:
+    Description: WEB_SOCKET_CONNECTION_HANDLER Lambda ARN
+    Value:
+      Fn::GetAtt:
+        - webSocketConnectionHandlersubscriptionHandlerFnD36711BB
+        - Arn
+  webSocketApiAPIEndpoint738D3707:
+    Description: WebSocket API Endpoint
+    Value:
+      Fn::Join:
+        - ""
+        - - wss://
+          - Ref: webSocketApiwebsocketApi8E784138
+          - .execute-api.
+          - Ref: AWS::Region
+          - "."
+          - Ref: AWS::URLSuffix
+          - /prod
+    Export:
+      Name: BinPackingSolutionWebSocketAPIEndpoint
+  dynamoDBStreamHandlerSubscriptionLambdaARN95955D21:
+    Description: DYNAMODB_STREAM_HANDLER Lambda ARN
+    Value:
+      Fn::GetAtt:
+        - dynamoDBStreamHandlersubscriptionHandlerFnC4662B2C
+        - Arn
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - af-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+Parameters:
+  BootstrapVersion:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /cdk-bootstrap/hnb659fds/version
+    Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
+Rules:
+  CheckBootstrapVersion:
+    Assertions:
+      - Assert:
+          Fn::Not:
+            - Fn::Contains:
+                - - "1"
+                  - "2"
+                  - "3"
+                  - "4"
+                  - "5"
+                - Ref: BootstrapVersion
+        AssertDescription: CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.
+

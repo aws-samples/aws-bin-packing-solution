@@ -1,0 +1,40 @@
+{
+  "name": "tools",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "compile": "npx lerna bootstrap && npx lerna exec -- yarn run build",
+    "build": "yarn run compile && npx yarn run lint",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx .",
+    "lint:fix": "eslint --fix --ext .ts --ext .tsx --ext .js --ext .jsx .",
+    "cfn-nag": "yarn run script cfn-nag",
+    "script": "yarn run compile && npx lerna exec --scope @tools/scripts -- yarn run",
+    "dependency-check": "npx owasp-dependency-check --format HTML -s ../application --out ../reports --exclude /node_modules/ --exclude /cdk.out/ --exclude /dist/",
+    "clean": "rm -rf node_modules && npx lerna exec -- yarn run clean"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^7.27.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-config-standard-react": "^9.2.0",
+    "eslint-plugin-header": "^3.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.17.0",
+    "eslint-plugin-standard": "^4.0.1",
+    "lerna": "^4.0.0",
+    "prettier": "^2.0.4"
+  },
+  "dependencies": {},
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "packages/@tools/*"
+    ]
+  }
+}

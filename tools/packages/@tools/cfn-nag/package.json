@@ -1,0 +1,23 @@
+{
+  "name": "@tools/cfn-nag",
+  "version": "0.0.0",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "compile": "tsc && tsc-esm -p tsconfig.json",
+    "build": "yarn run compile",
+    "clean": "rm -rf node_modules dist"
+  },
+  "devDependencies": {
+    "@types/node": "^16.0.0",
+    "minimist": "^1.2.5",
+    "yaml": "^1.10.2",
+    "typescript": "^4.3.2",
+    "typescript-esm": "^2.0.0",
+    "zx": "1.14.2"
+  },
+  "dependencies": {}
+}

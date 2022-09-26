@@ -1,0 +1,7 @@
+node_modules/
+**/nodes_modules/
+**/dist
+**/cdk.out
+aws-prototyping-tools/
+**/scripts/
+lib/
