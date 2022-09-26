@@ -41,7 +41,7 @@ This solution uses 2 languages - C# and TypeScript. The components are:
 
 - Packing Solver (C#) - `application/csharp/AWS.Prototyping.Pacman.Solver/src/AWS.Prototyping.Pacman.Solver`
 
-The packing solver contains the AWS Lambda function that handles the logic of packing items into containers. It is based off an implementation of the EB-AFIT packing algorithm originally developed as a master's thesis project by Erhan Baltacıoğlu (EB) at the U.S. Air Force Institute of Technology (AFIT) in 2001. This algorithm is also described in The Distributor's Three-Dimensional Pallet-Packing Problem: A Human Intelligence-Based Heuristic Approach, by Erhan Baltacıoğlu, James T. Moore, and Raymond R. Hill Jr., published in the International Journal of Operational Research in 2006 (volume 1, issue 3).
+The packing solver contains the AWS Lambda function that handles the logic of packing items into containers. It is based off an implementation of the EB-AFIT packing algorithm originally developed as a master's thesis project by Erhan Baltacıoğlu (EB) at the U.S. Air Force Institute of Technology (AFIT) in 2001. This algorithm is also described in [The Distributor's Three-Dimensional Pallet-Packing Problem: A Human Intelligence-Based Heuristic Approach, by Erhan Baltacıoğlu, James T. Moore, and Raymond R. Hill Jr.](https://scholar.afit.edu/cgi/viewcontent.cgi?article=5567&context=etd), published in the International Journal of Operational Research in 2006 (volume 1, issue 3).
 
 - Shared Types (TypeScript) - `application/typescript/packages/@aws-prototype/shared-types`
 
