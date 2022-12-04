@@ -10,14 +10,14 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, ReactNode, useMemo, useCallback, useState } from 'react';
-import { useParams, useHistory, generatePath } from 'react-router-dom';
+import {FC, ReactNode, useCallback, useMemo, useState} from 'react';
+import {generatePath, useNavigate, useParams} from 'react-router-dom';
 import Inline from 'aws-northstar/layouts/Inline';
 import Button from 'aws-northstar/components/Button';
 import Stack from 'aws-northstar/layouts/Stack';
 import Container from 'aws-northstar/layouts/Container';
-import { SolutionObjectBase } from '@aws-prototype/shared-types';
-import { APIRequest, useAPIGet, useAPIDelete } from 'api';
+import {SolutionObjectBase} from '@aws-prototype/shared-types';
+import {APIRequest, useAPIDelete, useAPIGet} from 'api';
 import QueryContainerTemplate from 'components/QueryContainerTemplate';
 import ResourceTagsDetails from 'components/ResourceTagsDetails';
 import DeleteConfirmationDialog from 'components/DeleteConfirmationDialog';
@@ -50,16 +50,14 @@ const GenericDetails = <T extends SolutionObjectBase>({
   mainAction
 }: GenericDetailsProps<T>) => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useHistory();
-  const { data, isLoading, error } = useAPIGet<T>(getRequest(id));
+  const navigate = useNavigate();
+  const { data, isLoading, error } = useAPIGet<T>(getRequest(id??''));
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const { mutate: deleteData } = useAPIDelete(deleteRequest());
 
   const handleUpdate = useCallback(() => {
-    navigate.push(
-      generatePath(routeUpdate, {
-        id,
-      }),
+    navigate(
+      generatePath(routeUpdate,{id:id??''} ),
     );
   }, [navigate, routeUpdate, id]);
 

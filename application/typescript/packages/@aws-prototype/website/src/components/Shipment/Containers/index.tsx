@@ -10,9 +10,9 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, useMemo } from 'react';
-import { ShipmentContainer, ContainerType } from '@aws-prototype/shared-types';
-import Table, { Column } from 'aws-northstar/components/Table';
+import {FC, useMemo} from 'react';
+import {ContainerType, ShipmentContainer} from '@aws-prototype/shared-types';
+import Table, {Column} from 'aws-northstar/components/Table';
 
 export interface ShipmentContainerListProps {
   data: ShipmentContainer[];
@@ -29,7 +29,7 @@ const ShipmentContainerList: FC<ShipmentContainerListProps> = ({ data, container
         accessor: 'containerTypeId',
         Cell: ({ row }) => {
           const containerType = containerTypes.find((ct) => ct.Id === row.original.containerTypeId);
-          return containerType?.name || row.original.containerTypeId;
+          return <>{containerType?.name || row.original.containerTypeId}</>;
         },
       },
       {

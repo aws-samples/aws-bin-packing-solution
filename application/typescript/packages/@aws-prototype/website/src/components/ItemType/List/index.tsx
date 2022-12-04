@@ -10,16 +10,16 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC } from 'react';
-import { generatePath } from 'react-router-dom';
-import { ItemType } from '@aws-prototype/shared-types';
-import Table, { Column } from 'aws-northstar/components/Table';
+import {FC} from 'react';
+import {generatePath} from 'react-router-dom';
+import {ItemType} from '@aws-prototype/shared-types';
+import Table, {Column} from 'aws-northstar/components/Table';
 import Link from 'aws-northstar/components/Link';
 import Badge from 'aws-northstar/components/Badge';
 import Inline from 'aws-northstar/layouts/Inline';
 import Checkbox from 'aws-northstar/components/Checkbox';
-import { TableComponentProps } from 'components/GenericList';
-import { ROUTE_ITEM_TYPE_DETAILS } from 'config/routes';
+import {TableComponentProps} from 'components/GenericList';
+import {ROUTE_ITEM_TYPE_DETAILS} from 'config/routes';
 
 const columnDefinitions: Column<ItemType>[] = [
   {
@@ -73,7 +73,7 @@ const columnDefinitions: Column<ItemType>[] = [
     width: 300,
     Header: 'Required Features',
     accessor: 'requiredFeatures',
-    Cell: ({ row }) => (row.original.requiredFeatures? <Inline>{row.original.requiredFeatures.map(feature => <Badge key={feature} color='blue' content={feature}/>)}</Inline> : '')
+    Cell: ({ row }) => (row.original.requiredFeatures? <Inline>{row.original.requiredFeatures.map(feature => <Badge key={feature} color='blue' content={feature}/>)}</Inline> : <></>)
   },
   {
     id: 'description',

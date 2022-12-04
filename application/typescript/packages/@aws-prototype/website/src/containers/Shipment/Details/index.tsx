@@ -10,36 +10,37 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, useCallback, useMemo, useState } from 'react';
+
+import {FC, useCallback, useMemo, useState} from 'react';
 import ShipmentContainerList from 'components/Shipment/Containers';
 import ShipmentItemList from 'components/Shipment/Items';
 import ShipmentDetailsComponent from 'components/Shipment/Details';
 import GenericDetails from 'components/GenericDetails';
 import {
+  createManifestRequest,
+  deleteShipmentRequest,
   getShipmentRequest,
-  useAPIGet,
-  useAPIPost,
   listContainerTypesRequest,
   listItemTypesRequest,
-  deleteShipmentRequest,
-  createManifestRequest,
-  useSubscription,
   subscribeManifestUpdateForShipmentRequest,
+  useAPIGet,
+  useAPIPost,
+  useSubscription,
 } from 'api';
 import ManifestListContainer from 'containers/Manifest/List';
-import { ContainerType, ItemType, Manifest, Shipment } from '@aws-prototype/shared-types';
+import {ContainerType, ItemType, Manifest, Shipment} from '@aws-prototype/shared-types';
 import Stack from 'aws-northstar/layouts/Stack';
-import { ROUTE_SHIPMENT_MANIFEST_DETAILS, ROUTE_SHIPMENT_UPDATE } from 'config/routes';
-import { generatePath, useHistory, useParams } from 'react-router-dom';
-import { useAppLayoutContext } from 'aws-northstar/layouts/AppLayout';
-import { v4 as uuidv4 } from 'uuid';
+import {ROUTE_SHIPMENT_MANIFEST_DETAILS, ROUTE_SHIPMENT_UPDATE} from 'config/routes';
+import {generatePath, useNavigate, useParams} from 'react-router-dom';
+import {useAppLayoutContext} from 'aws-northstar/layouts/AppLayout';
+import {v4 as uuidv4} from 'uuid';
 
 const ShipmentDetails: FC = () => {
-  const navigate = useHistory();
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data: containerTypes } = useAPIGet<ContainerType[]>(listContainerTypesRequest());
   const { data: itemTypes } = useAPIGet<ItemType[]>(listItemTypesRequest());
-  const { mutate: createManifest } = useAPIPost<Manifest, string>(createManifestRequest(id));
+  const { mutate: createManifest } = useAPIPost<Manifest, string>(createManifestRequest(id ?? ''));
   const [isRequesting, setIsRequesting] = useState(false);
   const [, setNotificationId] = useState<string>();
   const { addNotification, dismissNotifications } = useAppLayoutContext();
@@ -60,9 +61,9 @@ const ShipmentDetails: FC = () => {
 
   const handleManifestClick = useCallback(
     (manifestId: string) => {
-      navigate.push(
+      navigate(
         generatePath(ROUTE_SHIPMENT_MANIFEST_DETAILS, {
-          shipmentId: id,
+          shipmentId: id ??'',
           id: manifestId,
         }),
       );
@@ -77,7 +78,7 @@ const ShipmentDetails: FC = () => {
 
         const manifest: Manifest = {
           createdAt: new Date(),
-          shipmentId: id,
+          shipmentId: id ??'',
           status: 'Processing',
           items: data.items,
           containers: data.containers,
@@ -96,7 +97,7 @@ const ShipmentDetails: FC = () => {
             });
             setNotificationId(notificationId);
             subscribe(
-              subscribeManifestUpdateForShipmentRequest(id, manifestId, (newData: Manifest) => {
+              subscribeManifestUpdateForShipmentRequest(id ?? '', manifestId, (newData: Manifest) => {
                 console.log('received Manifest Update', newData);
                 const newNotificationId = uuidv4();
                 if (newData.status === 'Complete') {
@@ -109,9 +110,9 @@ const ShipmentDetails: FC = () => {
                     dismissible: true,
                     buttonText: 'View Details',
                     onButtonClick: () => {
-                      navigate.push(
+                      navigate(
                         generatePath(ROUTE_SHIPMENT_MANIFEST_DETAILS, {
-                          shipmentId: id,
+                          shipmentId: id ?? '',
                           id: manifestId,
                         }),
                       );
@@ -128,9 +129,9 @@ const ShipmentDetails: FC = () => {
                     dismissible: true,
                     buttonText: 'View Details',
                     onButtonClick: () => {
-                      navigate.push(
+                      navigate(
                         generatePath(ROUTE_SHIPMENT_MANIFEST_DETAILS, {
-                          shipmentId: id,
+                          shipmentId: id ?? '',
                           id: manifestId,
                         }),
                       );

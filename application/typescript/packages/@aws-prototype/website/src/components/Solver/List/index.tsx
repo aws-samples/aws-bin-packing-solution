@@ -10,9 +10,9 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, useEffect, useMemo, useState } from 'react';
-import { Solver } from '@aws-prototype/shared-types';
-import Table, { Column } from 'aws-northstar/components/Table';
+import {FC, useEffect, useMemo, useState} from 'react';
+import {Solver} from '@aws-prototype/shared-types';
+import Table, {Column} from 'aws-northstar/components/Table';
 import Inline from 'aws-northstar/layouts/Inline';
 import Button from 'aws-northstar/components/Button';
 
@@ -40,14 +40,14 @@ const SolverList: FC<SolverListProps> = ({ data, onClick, loading, errorText }) 
         width: 200,
         Header: 'Solver Name',
         accessor: 'name',
-        Cell: ({ row }) => row.original.name || '-',
+        Cell: ({ row }) => <>{row.original.name || '-'}</>,
       },
       {
         id: 'solverArn',
         width: 200,
         Header: 'Solver ARN',
         accessor: 'arn',
-        Cell: ({ row }) => row.original.arn || '-',
+        Cell: ({ row }) => <>{row.original.arn || '-'}</>,
       },
     ],
     [],

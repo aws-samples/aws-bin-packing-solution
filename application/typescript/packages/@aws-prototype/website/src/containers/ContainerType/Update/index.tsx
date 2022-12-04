@@ -10,18 +10,18 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC } from 'react';
-import { useParams } from 'react-router-dom';
-import { ContainerType } from '@aws-prototype/shared-types';
-import { useAPIPut, useAPIGet, getContainerTypeRequest, updateContainerTypeRequest } from 'api';
+import {FC} from 'react';
+import {useParams} from 'react-router-dom';
+import {ContainerType} from '@aws-prototype/shared-types';
+import {getContainerTypeRequest, updateContainerTypeRequest, useAPIGet, useAPIPut} from 'api';
 import ContainerTypeEdit from '../Edit';
 
 const ContainerTypeUpdate: FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  const { data, isLoading, error } = useAPIGet<ContainerType>(getContainerTypeRequest(id));
+  const { data, isLoading, error } = useAPIGet<ContainerType>(getContainerTypeRequest(id ?? ''));
 
-  const { mutate } = useAPIPut<ContainerType, ContainerType>(updateContainerTypeRequest(id));
+  const { mutate } = useAPIPut<ContainerType, ContainerType>(updateContainerTypeRequest(id ?? ''));
 
   return <ContainerTypeEdit data={data} isLoading={isLoading} error={error} mutate={mutate} />;
 };

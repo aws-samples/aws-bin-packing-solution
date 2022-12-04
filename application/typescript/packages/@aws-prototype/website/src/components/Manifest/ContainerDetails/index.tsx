@@ -10,12 +10,12 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, ReactNode, useCallback, useMemo, useState } from 'react';
+import {FC, ReactNode, useCallback, useMemo, useState} from 'react';
 import Grid from 'aws-northstar/layouts/Grid';
 import Box from 'aws-northstar/layouts/Box';
 import Button from 'aws-northstar/components/Button';
-import Table, { Column } from 'aws-northstar/components/Table';
-import { PackingItem, ItemType, ContainerType, DisplayPackingItem } from '@aws-prototype/shared-types';
+import Table, {Column} from 'aws-northstar/components/Table';
+import {ContainerType, DisplayPackingItem, ItemType, PackingItem} from '@aws-prototype/shared-types';
 import ManifestLayout from '../Layout';
 import BoxDetails from '../BoxDetails';
 
@@ -67,7 +67,7 @@ const ManifestContainer: FC<ManifestContainerProps> = ({ packingItems, itemTypes
         accessor: 'itemTypeId',
         Cell: ({ row }) => {
           const itemType = itemTypesMap[row.original.itemTypeId];
-          return itemType?.name || row.original.itemTypeId;
+          return <>{itemType?.name || row.original.itemTypeId}</>;
         },
       },
       {
@@ -75,7 +75,7 @@ const ManifestContainer: FC<ManifestContainerProps> = ({ packingItems, itemTypes
         width: 200,
         Header: 'Coordinates',
         accessor: 'coordinates',
-        Cell: ({ row }) => `${row.original.coordinates.x}, ${row.original.coordinates.y}, ${row.original.coordinates.z}`,
+        Cell: ({ row }) => <>`${row.original.coordinates.x}, ${row.original.coordinates.y}, ${row.original.coordinates.z}`</>,
       },
     ],
     [itemTypesMap, handleItemReset, containerType],

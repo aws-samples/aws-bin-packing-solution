@@ -10,24 +10,21 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC } from 'react';
-import { useParams } from 'react-router-dom';
-import { Manifest } from '@aws-prototype/shared-types';
-import {
-  getManifestRequest,
-  useAPIGet,
-} from 'api';
+import {FC} from 'react';
+import {useParams} from 'react-router-dom';
+import {Manifest} from '@aws-prototype/shared-types';
+import {getManifestRequest, useAPIGet,} from 'api';
 import QueryContainerTemplate from 'components/QueryContainerTemplate';
 import ManifestDetailInner from './components/ManifestDetailsInner';
 
 const ManifestDetails: FC = () => {
   const { id, shipmentId } = useParams<{ id: string; shipmentId: string }>();
-  const { data, isLoading, error } = useAPIGet<Manifest>(getManifestRequest(id));
+  const { data, isLoading, error } = useAPIGet<Manifest>(getManifestRequest(id ?? ''));
 
   return (
     <QueryContainerTemplate loading={isLoading} error={error} data={data}>
       {(data) => (
-        <ManifestDetailInner data={data} shipmentId={shipmentId}/>
+        <ManifestDetailInner data={data} shipmentId={shipmentId ?? ''}/>
       )}
     </QueryContainerTemplate>
   );

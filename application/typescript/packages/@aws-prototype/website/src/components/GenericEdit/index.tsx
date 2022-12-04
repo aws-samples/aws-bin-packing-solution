@@ -10,13 +10,14 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { UseMutationResult } from 'react-query';
-import { v4 as uuidv4 } from 'uuid';
-import { SolutionObjectBase } from '@aws-prototype/shared-types';
 
-import { useAppLayoutContext } from 'aws-northstar/layouts/AppLayout';
+import {FC, useCallback, useEffect, useState} from 'react';
+import {UseMutationResult} from 'react-query';
+import {v4 as uuidv4} from 'uuid';
+import {SolutionObjectBase} from '@aws-prototype/shared-types';
+
+import {useAppLayoutContext} from 'aws-northstar/layouts/AppLayout';
+import {useNavigate} from "react-router-dom";
 
 export interface EditFormComponentProps<T, D = {}> {
   onSubmit: (data: any) => void;
@@ -35,7 +36,7 @@ export interface GenericEditProps<T, D = {}> {
 }
 
 const GenericEdit = <T extends SolutionObjectBase, D = {}>({ postProcess, mutate, initialValues, FormComponent, additionalProps }: GenericEditProps<T, D>) => {
-  const navigate = useHistory();
+  const navigate = useNavigate();
   const { addNotification, dismissNotifications } = useAppLayoutContext();
   const [, setNotificationId] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +59,7 @@ const GenericEdit = <T extends SolutionObjectBase, D = {}>({ postProcess, mutate
       mutate(data, {
         onSuccess: () => {
           setIsSubmitting(false);
-          navigate.goBack();
+          navigate(-1);
         },
         onError: (error) => {
           const id = uuidv4();
@@ -83,7 +84,7 @@ const GenericEdit = <T extends SolutionObjectBase, D = {}>({ postProcess, mutate
     };
   }, [dismissNotification]);
 
-  const handleCancel = useCallback(() => navigate.goBack(), [navigate]);
+  const handleCancel = useCallback(() => navigate(-1), [navigate]);
 
   return (
     <FormComponent

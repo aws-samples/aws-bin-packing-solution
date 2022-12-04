@@ -10,13 +10,14 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, ReactNode, useCallback, useState, useMemo } from 'react';
+
+import {FC, ReactNode, useCallback, useMemo, useState} from 'react';
 import Inline from 'aws-northstar/layouts/Inline';
 import Button from 'aws-northstar/components/Button';
-import { SolutionObjectBase } from '@aws-prototype/shared-types';
-import { useHistory, generatePath } from 'react-router-dom';
+import {SolutionObjectBase} from '@aws-prototype/shared-types';
+import {generatePath, useNavigate} from 'react-router-dom';
 import DeleteConfirmationDialog from 'components/DeleteConfirmationDialog';
-import { useAPIGet, useAPIDelete, APIRequest } from 'api';
+import {APIRequest, useAPIDelete, useAPIGet} from 'api';
 
 export interface TableComponentProps<T> {
   data: T[];
@@ -36,18 +37,18 @@ export interface GenericListProps<T> {
 }
 
 const GenericList = <T extends SolutionObjectBase>({ routeCreate, routeUpdate, listRequest, deleteRequest, typeLabel, TableComponent }: GenericListProps<T>) => {
-  const navigate = useHistory();
+  const navigate = useNavigate();
   const [recordToBeDeleted, setRecordToBeDeleted] = useState<T>();
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const { data, isLoading, error } = useAPIGet<T[]>(listRequest());
   const { mutate: deleteData } = useAPIDelete(deleteRequest());
   const [selectedRows, setSelectedRows] = useState<T[]>();
 
-  const handleCreate = useCallback(() => navigate.push(routeCreate), [navigate, routeCreate]);
+  const handleCreate = useCallback(() => navigate(routeCreate), [navigate, routeCreate]);
 
   const handleUpdate = useCallback(
     (data: T) => {
-      navigate.push(
+      navigate(
         generatePath(routeUpdate, {
           id: data.Id || '',
         }),
@@ -59,7 +60,7 @@ const GenericList = <T extends SolutionObjectBase>({ routeCreate, routeUpdate, l
   const handleDelete = useCallback((data: T) => {
     setRecordToBeDeleted(data);
     setDeleteDialogVisible(true);
-  }, []);  
+  }, []);
 
   const tableActions = useMemo(() => {
     return (

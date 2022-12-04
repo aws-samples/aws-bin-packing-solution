@@ -10,8 +10,8 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, useMemo } from 'react';
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import {FC, useMemo} from 'react';
+import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 
 import NorthStarThemeProvider from 'aws-northstar/components/NorthStarThemeProvider';
 import AppLayout from 'aws-northstar/layouts/AppLayout';
@@ -23,9 +23,9 @@ import BreadcrumbGroup from 'aws-northstar/components/BreadcrumbGroup';
 
 import routes from 'routes';
 import navigationTemplate from 'config/navigation';
-import { NAV_HEADER, HEADER, SIGN_OUT } from 'config/resourceStrings';
+import {HEADER, NAV_HEADER, SIGN_OUT} from 'config/resourceStrings';
 import withAuthenticator from 'enhancers/withAuthenticator';
-import withAppContext, { useAppContext } from 'enhancers/withAppContext';
+import withAppContext, {useAppContext} from 'enhancers/withAppContext';
 
 const App: FC = () => {
   const { user, signOut } = useAppContext();
@@ -52,16 +52,19 @@ const App: FC = () => {
 
   return (
     <NorthStarThemeProvider>
-        <Router>
+        <BrowserRouter>
           <AppLayout header={header} navigation={navigation} breadcrumbs={breadcrumbs}>
-            <Switch>
+            <Routes>
               {routes.map((route) => (
-                <Route key={route.path} exact={true} path={route.path} component={route.Component} />
+                <Route key={route.path}  path={route.path} element={route.Component} />
               ))}
-              <Redirect to='/'/>
-            </Switch>
+                <Route
+                    path="*"
+                    element={<Navigate to="/" replace />}
+                />
+            </Routes>
           </AppLayout>
-        </Router>
+        </BrowserRouter>
     </NorthStarThemeProvider>
   );
 };

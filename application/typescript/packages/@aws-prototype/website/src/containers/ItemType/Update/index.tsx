@@ -10,19 +10,19 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC } from 'react';
-import { useParams } from 'react-router-dom';
-import { useAPIPut, useAPIGet, getItemTypeRequest, updateItemTypeRequest } from 'api';
+import {FC} from 'react';
+import {useParams} from 'react-router-dom';
+import {getItemTypeRequest, updateItemTypeRequest, useAPIGet, useAPIPut} from 'api';
 import ItemTypeEdit from '../Edit';
-import { ItemType } from '@aws-prototype/shared-types';
+import {ItemType} from '@aws-prototype/shared-types';
 
 const ItemTypeUpdate: FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  const { data, isLoading, error } = useAPIGet<ItemType>(getItemTypeRequest(id));
-  
-  const { mutate } = useAPIPut<ItemType, ItemType>(updateItemTypeRequest(id));
- 
+  const { data, isLoading, error } = useAPIGet<ItemType>(getItemTypeRequest(id ?? ''));
+
+  const { mutate } = useAPIPut<ItemType, ItemType>(updateItemTypeRequest(id ?? ''));
+
   return <ItemTypeEdit mutate={mutate} isLoading={isLoading} data={data} error={error}/>;
 };
 

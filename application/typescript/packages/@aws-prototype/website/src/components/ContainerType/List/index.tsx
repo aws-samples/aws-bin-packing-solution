@@ -10,15 +10,15 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC } from 'react';
-import { ContainerType } from '@aws-prototype/shared-types';
-import Table, { Column } from 'aws-northstar/components/Table';
+import {FC} from 'react';
+import {ContainerType} from '@aws-prototype/shared-types';
+import Table, {Column} from 'aws-northstar/components/Table';
 import Link from 'aws-northstar/components/Link';
 import Badge from 'aws-northstar/components/Badge';
 import Inline from 'aws-northstar/layouts/Inline';
-import { generatePath } from 'react-router-dom';
-import { ROUTE_CONTAINER_TYPE_DETAILS } from 'config/routes';
-import { TableComponentProps } from 'components/GenericList';
+import {generatePath} from 'react-router-dom';
+import {ROUTE_CONTAINER_TYPE_DETAILS} from 'config/routes';
+import {TableComponentProps} from 'components/GenericList';
 
 const columnDefinitions: Column<ContainerType>[] = [
   {
@@ -59,7 +59,7 @@ const columnDefinitions: Column<ContainerType>[] = [
     width: 300,
     Header: 'Features',
     accessor: 'features',
-    Cell: ({ row }) => (row.original.features? <Inline>{row.original.features.map(feature => <Badge key={feature} color='blue' content={feature}/>)}</Inline> : '')
+    Cell: ({ row }) => (row.original.features? <Inline>{row.original.features.map(feature => <Badge key={feature} color='blue' content={feature}/>)}</Inline> :<></>)
   },
   {
     id: 'description',

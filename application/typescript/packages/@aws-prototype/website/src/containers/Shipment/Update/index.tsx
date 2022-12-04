@@ -10,10 +10,10 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC } from 'react';
-import { useParams } from 'react-router-dom';
-import { Shipment } from '@aws-prototype/shared-types';
-import { useAPIPut, useAPIGet, getShipmentRequest, updateShipmentRequest } from 'api';
+import {FC} from 'react';
+import {useParams} from 'react-router-dom';
+import {Shipment} from '@aws-prototype/shared-types';
+import {getShipmentRequest, updateShipmentRequest, useAPIGet, useAPIPut} from 'api';
 import QueryContainerTemplate from 'components/QueryContainerTemplate';
 import ShipmentForm from 'components/Shipment/Form';
 import ShipmentEdit from '../Edit';
@@ -21,10 +21,10 @@ import ShipmentEdit from '../Edit';
 const ShipmentUpdate: FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  const { data, isLoading, error } = useAPIGet<Shipment>(getShipmentRequest(id));
-  
-  const { mutate } = useAPIPut<Shipment, Shipment>(updateShipmentRequest(id));
- 
+  const { data, isLoading, error } = useAPIGet<Shipment>(getShipmentRequest(id ?? ''));
+
+  const { mutate } = useAPIPut<Shipment, Shipment>(updateShipmentRequest(id ?? ''));
+
   return (
     <QueryContainerTemplate loading={isLoading} error={error} data={data}>
       {(data) => <ShipmentEdit initialValues={data} mutate={mutate} FormComponent={ShipmentForm}/>}

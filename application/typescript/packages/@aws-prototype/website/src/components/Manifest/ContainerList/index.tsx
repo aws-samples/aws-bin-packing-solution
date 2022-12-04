@@ -10,13 +10,13 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, useMemo } from 'react';
-import { generatePath } from 'react-router-dom';
+import {FC, useMemo} from 'react';
+import {generatePath} from 'react-router-dom';
 import Button from 'aws-northstar/components/Button';
-import Table, { Column } from 'aws-northstar/components/Table';
+import Table, {Column} from 'aws-northstar/components/Table';
 import Link from 'aws-northstar/components/Link';
-import { PackingItem } from '@aws-prototype/shared-types';
-import { ROUTE_CONTAINER_TYPE_DETAILS } from 'config/routes';
+import {PackingItem} from '@aws-prototype/shared-types';
+import {ROUTE_CONTAINER_TYPE_DETAILS} from 'config/routes';
 
 export interface ManifestContainer {
   Id: string;
@@ -68,7 +68,7 @@ const ManifestContainerList: FC<ManifestContainerListProps> = ({ data, onClick }
         width: 200,
         Header: 'Packing Items #',
         accessor: 'packingItems',
-        Cell: ({ row }) => row.original.packingItems?.length || 0,
+        Cell: ({ row }) => <>row.original.packingItems?.length || 0</>,
       },
     ],
     [onClick],

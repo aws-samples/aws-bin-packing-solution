@@ -10,19 +10,19 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, Dispatch, useState, useCallback } from 'react';
+import {Dispatch, FC, useCallback, useState} from 'react';
 import Alert from 'aws-northstar/components/Alert';
-import { UseMutateFunction } from 'react-query';
+import {UseMutateFunction} from 'react-query';
 import NorthStarDeleteConfirmationDialog from 'aws-northstar/advanced/DeleteConfirmationDialog';
-import { useHistory } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 export interface DeleteConfirmationModalProps {
     name: string;
-    idObj: any, 
+    idObj: any,
     mutate: UseMutateFunction<unknown, Error, unknown, unknown>;
     visible: boolean;
     setVisible: Dispatch<React.SetStateAction<boolean>>;
-    navPath?: string; 
+    navPath?: string;
 }
 
 const DeleteConfirmationDialog: FC<DeleteConfirmationModalProps> =
@@ -36,7 +36,7 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationModalProps> =
     }) => {
         const [isDeleting, setIsDeleting] = useState(false);
         const [errorText, setErrorText ] = useState<string>();
-        const navigate = useHistory();
+        const navigate = useNavigate();
 
         const handleConfirmDelete = useCallback(() => {
             setErrorText(undefined);
@@ -46,7 +46,7 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationModalProps> =
                     setIsDeleting(false);
                     setVisible(false);
                     if(navPath) {
-                        navigate.push(navPath)
+                        navigate(navPath)
                     }
                 },
                 onError: (err) => {

@@ -10,9 +10,9 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
-import { FC, useMemo } from 'react';
-import { ShipmentItem, ItemType, UnpackedItem } from '@aws-prototype/shared-types';
-import Table, { Column } from 'aws-northstar/components/Table';
+import {FC, useMemo} from 'react';
+import {ItemType, ShipmentItem, UnpackedItem} from '@aws-prototype/shared-types';
+import Table, {Column} from 'aws-northstar/components/Table';
 import Badge from 'aws-northstar/components/Badge';
 import Box from 'aws-northstar/layouts/Box';
 
@@ -32,7 +32,7 @@ const ShipmentItemList: FC<ShipmentItemListProps> = ({ data, itemTypes, unpacked
         accessor: 'itemTypeId',
         Cell: ({ row }) => {
           const itemType = itemTypes.find((it) => it.Id === row.original.itemTypeId);
-          return itemType?.name || row.original.itemTypeId;
+          return <>{itemType?.name || row.original.itemTypeId}</>;
         },
       },
       {
