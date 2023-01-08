@@ -42,7 +42,9 @@
     "lerna/**/tar": "^6.1.9",
     "lerna/**/ansi-regex": "^5.0.1",
     "lerna/**/node-fetch": "^2.6.7",
-    "lerna/**/json-schema": "^0.4.0"
+    "lerna/**/json-schema": "^0.4.0",
+    "d3-color": "3.1.0",
+    "json5": "2.2.2"
   },
   "workspaces": {
     "packages": [

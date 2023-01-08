@@ -23,6 +23,9 @@
     "ts-node": "^9.0.0",
     "typescript": "~3.9.7"
   },
+  "resolutions": {
+    "d3-color": "3.1.0"
+  },
   "dependencies": {
     "@aws-cdk/aws-apigatewayv2-alpha": "^2.33.0-alpha.0",
     "@aws-cdk/aws-apigatewayv2-authorizers-alpha": "^2.33.0-alpha.0",
