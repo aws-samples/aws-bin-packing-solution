@@ -9,6 +9,6 @@
     "application/typescript/*"
   ],
   "devDependencies": {
-    "lerna": "^5.5.2"
+    "lerna": "^7.0.2"
   }
 }
