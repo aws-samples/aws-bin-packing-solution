@@ -8,10 +8,10 @@ with the License.  You may obtain a copy of the License at
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-specific language governing permissions and limitations under the License.   
+specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { ContainerType } from '@aws-prototype/shared-types';
+import { ContainerType } from '@aws-samples/bin-packing-shared-types';
 import CrudService from '../../Common/CrudService';
 import { NO_BODY, NO_ID } from '../../Common/Types';
 import APIEventHandler from '../../Common/APIEventHandler';

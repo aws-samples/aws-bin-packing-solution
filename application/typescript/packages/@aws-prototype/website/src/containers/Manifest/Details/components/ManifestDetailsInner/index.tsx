@@ -14,7 +14,7 @@ import { FC, useEffect, useCallback, useMemo } from 'react';
 import Container from 'aws-northstar/layouts/Container';
 import Stack from 'aws-northstar/layouts/Stack';
 import { useAppLayoutContext } from 'aws-northstar/layouts/AppLayout';
-import { ContainerType, ItemType, Manifest, Shipment, PackingItem } from '@aws-prototype/shared-types';
+import { ContainerType, ItemType, Manifest, Shipment, PackingItem } from '@aws-samples/bin-packing-shared-types';
 import { useAPIGet, listContainerTypesRequest, getShipmentRequest, getItemTypeRequest } from 'api';
 import ManifestDetailsComponent from 'components/Manifest/Details';
 import ManifestContainerDetails from 'components/Manifest/ContainerDetails';

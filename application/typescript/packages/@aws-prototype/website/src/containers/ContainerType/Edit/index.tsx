@@ -11,7 +11,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
 import { FC, useCallback, useMemo } from 'react';
-import { ContainerType } from '@aws-prototype/shared-types';
+import { ContainerType } from '@aws-samples/bin-packing-shared-types';
 import { useAPIGet, listContainerTypesRequest } from 'api';
 import QueryContainerTemplate from 'components/QueryContainerTemplate';
 import GenericEdit, { GenericEditProps } from 'components/GenericEdit';

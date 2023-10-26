@@ -11,7 +11,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
 import { FC } from 'react';
-import { ManifestStatus } from '@aws-prototype/shared-types';
+import { ManifestStatus } from '@aws-samples/bin-packing-shared-types';
 import StatusIndicator from 'aws-northstar/components/StatusIndicator';
 
 export interface ManifestStatusProps {

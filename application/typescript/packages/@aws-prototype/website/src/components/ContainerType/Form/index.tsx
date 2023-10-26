@@ -14,7 +14,7 @@ import { FC, useMemo } from 'react';
 import FormRenderer, { componentTypes, validatorTypes } from 'aws-northstar/components/FormRenderer';
 import resourceTagsFormElement from 'config/resourceTagsFormElement';
 import { EditFormComponentProps } from 'components/GenericEdit';
-import { ContainerType } from '@aws-prototype/shared-types';
+import { ContainerType } from '@aws-samples/bin-packing-shared-types';
 import dataTypes from '@data-driven-forms/react-form-renderer/data-types';
 
 export interface AdditionalFormProps {

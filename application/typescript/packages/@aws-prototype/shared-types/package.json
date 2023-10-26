@@ -1,5 +1,5 @@
 {
-  "name": "@aws-prototype/shared-types",
+  "name": "@aws-samples/bin-packing-shared-types",
   "version": "0.0.0",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.txt",

@@ -13,7 +13,7 @@ specific language governing permissions and limitations under the License.
 import { FC } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { PresentationControls } from '@react-three/drei';
-import { DisplayPackingItem, ItemType } from '@aws-prototype/shared-types';
+import { DisplayPackingItem, ItemType } from '@aws-samples/bin-packing-shared-types';
 import Box, { BoxProps } from '../Box';
 import Container, { ContainerProps } from '../Container';
 

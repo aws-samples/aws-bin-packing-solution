@@ -15,7 +15,7 @@ import {generatePath} from 'react-router-dom';
 import Button from 'aws-northstar/components/Button';
 import Table, {Column} from 'aws-northstar/components/Table';
 import Link from 'aws-northstar/components/Link';
-import {PackingItem} from '@aws-prototype/shared-types';
+import {PackingItem} from '@aws-samples/bin-packing-shared-types';
 import {ROUTE_CONTAINER_TYPE_DETAILS} from 'config/routes';
 
 export interface ManifestContainer {

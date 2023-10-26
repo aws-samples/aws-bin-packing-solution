@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 import {FC} from 'react';
 import {generatePath} from 'react-router-dom';
-import {ItemType} from '@aws-prototype/shared-types';
+import {ItemType} from '@aws-samples/bin-packing-shared-types';
 import Table, {Column} from 'aws-northstar/components/Table';
 import Link from 'aws-northstar/components/Link';
 import Badge from 'aws-northstar/components/Badge';

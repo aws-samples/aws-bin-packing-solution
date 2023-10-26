@@ -13,7 +13,7 @@ specific language governing permissions and limitations under the License.
 import { FC } from 'react';
 import ManifestListComponent from 'components/Manifest/List';
 import { listShipmentManifestsRequest, useAPIGet } from 'api';
-import { Manifest } from '@aws-prototype/shared-types';
+import { Manifest } from '@aws-samples/bin-packing-shared-types';
 
 export interface ManifestDetailsContainerProps {
   shipmentId: string;

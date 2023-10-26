@@ -11,7 +11,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
 import {FC, useMemo} from 'react';
-import {ContainerType, ShipmentContainer} from '@aws-prototype/shared-types';
+import {ContainerType, ShipmentContainer} from '@aws-samples/bin-packing-shared-types';
 import Table, {Column} from 'aws-northstar/components/Table';
 
 export interface ShipmentContainerListProps {

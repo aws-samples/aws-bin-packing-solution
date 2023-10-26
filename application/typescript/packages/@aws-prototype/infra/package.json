@@ -1,5 +1,5 @@
 {
-  "name": "@aws-prototype/infra",
+  "name": "@aws-samples/bin-packing-infra",
   "version": "0.0.0",
   "bin": {
     "solution-infra": "bin/infra.js"
@@ -30,7 +30,7 @@
     "@aws-cdk/aws-apigatewayv2-alpha": "^2.33.0-alpha.0",
     "@aws-cdk/aws-apigatewayv2-authorizers-alpha": "^2.33.0-alpha.0",
     "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.33.0-alpha.0",
-    "@aws-prototype/website": "0.0.0",
+    "@aws-samples/bin-packing-website": "0.0.0",
     "aws-cdk-lib": "^2.33.0",
     "constructs": "^10.1.51",
     "esbuild": "0",

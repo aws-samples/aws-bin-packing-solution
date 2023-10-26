@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
-import { ItemType } from '@aws-prototype/shared-types';
+import { ItemType } from '@aws-samples/bin-packing-shared-types';
 import CrudService from '../../Common/CrudService';
 import { NO_BODY, NO_ID } from '../../Common/Types';
 import APIEventHandler from '../../Common/APIEventHandler';

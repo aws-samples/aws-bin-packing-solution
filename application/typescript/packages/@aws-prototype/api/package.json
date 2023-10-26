@@ -1,5 +1,5 @@
 {
-  "name": "@aws-prototype/api-lambda",
+  "name": "@aws-samples/bin-packing-api-lambda",
   "version": "0.0.0",
   "main": "dist/index.js",
   "source": "src/index.ts",
@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@aws-prototype/shared-types": "0.0.0",
+    "@aws-samples/bin-packing-shared-types": "0.0.0",
     "@aws-sdk/client-dynamodb": "^3.417.0",
     "@aws-sdk/client-lambda": "^3.414.0",
     "@aws-sdk/client-resource-groups-tagging-api": "^3.414.0",

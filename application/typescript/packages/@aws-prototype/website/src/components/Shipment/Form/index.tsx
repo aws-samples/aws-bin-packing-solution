@@ -11,7 +11,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
 import { FC, useMemo } from 'react';
-import { ContainerType, ItemType, Shipment } from '@aws-prototype/shared-types';
+import { ContainerType, ItemType, Shipment } from '@aws-samples/bin-packing-shared-types';
 import FormRenderer, { componentTypes, validatorTypes } from 'aws-northstar/components/FormRenderer';
 import resourceTagsFormElement from 'config/resourceTagsFormElement';
 import { EditFormComponentProps } from 'components/GenericEdit';

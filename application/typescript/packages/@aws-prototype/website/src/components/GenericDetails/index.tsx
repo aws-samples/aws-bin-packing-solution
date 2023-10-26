@@ -16,7 +16,7 @@ import Inline from 'aws-northstar/layouts/Inline';
 import Button from 'aws-northstar/components/Button';
 import Stack from 'aws-northstar/layouts/Stack';
 import Container from 'aws-northstar/layouts/Container';
-import {SolutionObjectBase} from '@aws-prototype/shared-types';
+import {SolutionObjectBase} from '@aws-samples/bin-packing-shared-types';
 import {APIRequest, useAPIDelete, useAPIGet} from 'api';
 import QueryContainerTemplate from 'components/QueryContainerTemplate';
 import ResourceTagsDetails from 'components/ResourceTagsDetails';

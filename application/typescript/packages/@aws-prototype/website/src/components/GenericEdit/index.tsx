@@ -14,7 +14,7 @@ specific language governing permissions and limitations under the License.
 import {FC, useCallback, useEffect, useState} from 'react';
 import {UseMutationResult} from 'react-query';
 import {v4 as uuidv4} from 'uuid';
-import {SolutionObjectBase} from '@aws-prototype/shared-types';
+import {SolutionObjectBase} from '@aws-samples/bin-packing-shared-types';
 
 import {useAppLayoutContext} from 'aws-northstar/layouts/AppLayout';
 import {useNavigate} from "react-router-dom";

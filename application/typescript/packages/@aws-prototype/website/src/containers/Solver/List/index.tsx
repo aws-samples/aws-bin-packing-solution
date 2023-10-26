@@ -13,7 +13,7 @@ specific language governing permissions and limitations under the License.
 import { FC, useCallback, useState } from 'react';
 import SolverListComponent from 'components/Solver/List';
 import { listSolversRequest, updateSolverSettingsRequest, useAPIGet, useAPIPost } from 'api';
-import { Solver } from '@aws-prototype/shared-types';
+import { Solver } from '@aws-samples/bin-packing-shared-types';
 import { useAppLayoutContext } from 'aws-northstar/layouts/AppLayout';
 import { v4 as uuidv4 } from 'uuid';
 

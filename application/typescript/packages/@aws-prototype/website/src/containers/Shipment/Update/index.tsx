@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
-import {Shipment} from '@aws-prototype/shared-types';
+import {Shipment} from '@aws-samples/bin-packing-shared-types';
 import {getShipmentRequest, updateShipmentRequest, useAPIGet, useAPIPut} from 'api';
 import QueryContainerTemplate from 'components/QueryContainerTemplate';
 import ShipmentForm from 'components/Shipment/Form';

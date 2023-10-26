@@ -11,7 +11,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
  import { FC } from 'react';
- import { Shipment, ContainerType, ItemType } from '@aws-prototype/shared-types';
+ import { Shipment, ContainerType, ItemType } from '@aws-samples/bin-packing-shared-types';
  import { useAPIGet, listContainerTypesRequest, listItemTypesRequest } from 'api';
  import GenericEdit, { GenericEditProps } from 'components/GenericEdit';
 import { ShipmentFormAdditionalProps } from 'components/Shipment/Form';

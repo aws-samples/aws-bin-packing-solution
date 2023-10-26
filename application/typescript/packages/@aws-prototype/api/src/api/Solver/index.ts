@@ -15,7 +15,7 @@ import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import APIEventHandler from '../../Common/APIEventHandler';
 import { LambdaClient, ListFunctionsCommand, ListTagsCommand } from '@aws-sdk/client-lambda';
 import { SSMClient, PutParameterCommand, GetParameterCommand } from '@aws-sdk/client-ssm';
-import { Solver } from '@aws-prototype/shared-types';
+import { Solver } from '@aws-samples/bin-packing-shared-types';
 import { NO_BODY } from '../../Common/Types';
 const attr = require('dynamodb-data-types').AttributeValue;
 

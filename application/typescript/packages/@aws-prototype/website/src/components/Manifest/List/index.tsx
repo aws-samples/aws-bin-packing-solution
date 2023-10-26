@@ -11,7 +11,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
 import {FC, useMemo} from 'react';
-import {Manifest} from '@aws-prototype/shared-types';
+import {Manifest} from '@aws-samples/bin-packing-shared-types';
 import Button from 'aws-northstar/components/Button';
 import Table, {Column} from 'aws-northstar/components/Table';
 import Status from '../Status';

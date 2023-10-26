@@ -11,7 +11,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
 import {FC} from 'react';
-import {ContainerType} from '@aws-prototype/shared-types';
+import {ContainerType} from '@aws-samples/bin-packing-shared-types';
 import Table, {Column} from 'aws-northstar/components/Table';
 import Link from 'aws-northstar/components/Link';
 import Badge from 'aws-northstar/components/Badge';

@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
-import {ContainerType} from '@aws-prototype/shared-types';
+import {ContainerType} from '@aws-samples/bin-packing-shared-types';
 import {getContainerTypeRequest, updateContainerTypeRequest, useAPIGet, useAPIPut} from 'api';
 import ContainerTypeEdit from '../Edit';
 

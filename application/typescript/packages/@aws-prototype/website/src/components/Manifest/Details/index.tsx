@@ -14,7 +14,7 @@ import { FC } from 'react';
 import Stack from 'aws-northstar/layouts/Stack';
 import KeyValuePair from 'aws-northstar/components/KeyValuePair';
 import ColumnLayout, { Column } from 'aws-northstar/layouts/ColumnLayout';
-import { Manifest } from '@aws-prototype/shared-types';
+import { Manifest } from '@aws-samples/bin-packing-shared-types';
 import formatDate from 'utils/formatDate';
 import ManifestStatusComponent from '../Status';
 

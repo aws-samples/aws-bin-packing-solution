@@ -15,7 +15,7 @@ import Grid from 'aws-northstar/layouts/Grid';
 import Box from 'aws-northstar/layouts/Box';
 import Button from 'aws-northstar/components/Button';
 import Table, {Column} from 'aws-northstar/components/Table';
-import {ContainerType, DisplayPackingItem, ItemType, PackingItem} from '@aws-prototype/shared-types';
+import {ContainerType, DisplayPackingItem, ItemType, PackingItem} from '@aws-samples/bin-packing-shared-types';
 import ManifestLayout from '../Layout';
 import BoxDetails from '../BoxDetails';
 

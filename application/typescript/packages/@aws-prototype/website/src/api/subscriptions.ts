@@ -10,19 +10,18 @@ Unless required by applicable law or agreed to in writing, software distributed 
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.   
  **********************************************************************************************************************/
+import {Manifest, SUBSCRIPTION_TYPE_MANIFEST_UPDATE} from '@aws-samples/bin-packing-shared-types';
+import {ENTITY_KEY_MANIFESTS, ENTITY_KEY_SHIPMENT_MANIFESTS} from 'config/api';
+import {Subscription} from './types';
 
-import { SUBSCRIPTION_TYPE_MANIFEST_UPDATE, Manifest } from '@aws-prototype/shared-types';
-import { ENTITY_KEY_MANIFESTS, ENTITY_KEY_SHIPMENT_MANIFESTS } from 'config/api';
-import { Subscription } from './types';
-
-export const subscribeManifestUpdateForShipmentRequest = (shipmentId: string, manifestId: string, callback: (newData: Manifest) => void): Subscription<{id: string}, Manifest> => ({
-  type: SUBSCRIPTION_TYPE_MANIFEST_UPDATE,
-  payload: {
-    id: manifestId,
-  },
-  queryKeys: [
-    [ENTITY_KEY_MANIFESTS, manifestId],
-    [ENTITY_KEY_SHIPMENT_MANIFESTS, shipmentId],
-  ],
-  onDataReceived: callback
+export const subscribeManifestUpdateForShipmentRequest = (shipmentId: string, manifestId: string, callback: (newData: Manifest) => void): Subscription<{ id: string }, Manifest> => ({
+    type: SUBSCRIPTION_TYPE_MANIFEST_UPDATE,
+    payload: {
+        id: manifestId,
+    },
+    queryKeys: [
+        [ENTITY_KEY_MANIFESTS, manifestId],
+        [ENTITY_KEY_SHIPMENT_MANIFESTS, shipmentId],
+    ],
+    onDataReceived: callback
 });

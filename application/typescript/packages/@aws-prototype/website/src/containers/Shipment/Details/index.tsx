@@ -28,7 +28,7 @@ import {
   useSubscription,
 } from 'api';
 import ManifestListContainer from 'containers/Manifest/List';
-import {ContainerType, ItemType, Manifest, Shipment} from '@aws-prototype/shared-types';
+import {ContainerType, ItemType, Manifest, Shipment} from '@aws-samples/bin-packing-shared-types';
 import Stack from 'aws-northstar/layouts/Stack';
 import {ROUTE_SHIPMENT_MANIFEST_DETAILS, ROUTE_SHIPMENT_UPDATE} from 'config/routes';
 import {generatePath, useNavigate, useParams} from 'react-router-dom';

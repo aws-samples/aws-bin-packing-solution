@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 import {FC} from 'react';
 import {useParams} from 'react-router-dom';
-import {Manifest} from '@aws-prototype/shared-types';
+import {Manifest} from '@aws-samples/bin-packing-shared-types';
 import {getManifestRequest, useAPIGet,} from 'api';
 import QueryContainerTemplate from 'components/QueryContainerTemplate';
 import ManifestDetailInner from './components/ManifestDetailsInner';

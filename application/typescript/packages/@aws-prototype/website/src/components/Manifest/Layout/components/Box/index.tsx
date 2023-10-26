@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 import { FC, useCallback, useRef, useState, useMemo } from 'react';
 import { NORTHSTAR_COLORS } from 'aws-northstar/config/color';
-import { DisplayPackingItem, ItemType } from '@aws-prototype/shared-types';
+import { DisplayPackingItem, ItemType } from '@aws-samples/bin-packing-shared-types';
 
 export interface BoxProps {
   id: string;

@@ -1,5 +1,5 @@
 {
-  "name": "@aws-prototype/cicd",
+  "name": "@aws-samples/bin-packing-cicd",
   "version": "0.0.0",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.txt",
@@ -38,7 +38,7 @@
     "zx": "1.14.2"
   },
   "dependencies": {
-    "@aws-prototype/infra": "^0.0.0",
+    "@aws-samples/bin-packing-infra": "^0.0.0",
     "aws-cdk-lib": "^2.33.0",
     "common-tags": "^1.8.0",
     "constructs": "^10.1.51",

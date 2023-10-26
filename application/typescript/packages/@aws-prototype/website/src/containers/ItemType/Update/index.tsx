@@ -14,7 +14,7 @@ import {FC} from 'react';
 import {useParams} from 'react-router-dom';
 import {getItemTypeRequest, updateItemTypeRequest, useAPIGet, useAPIPut} from 'api';
 import ItemTypeEdit from '../Edit';
-import {ItemType} from '@aws-prototype/shared-types';
+import {ItemType} from '@aws-samples/bin-packing-shared-types';
 
 const ItemTypeUpdate: FC = () => {
   const { id } = useParams<{ id: string }>();

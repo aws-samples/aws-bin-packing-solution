@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 import { FC, createContext, useCallback, useContext, useState, useEffect } from 'react';
 import { Auth } from 'aws-amplify';
-import { User } from '@aws-prototype/shared-types';
+import { User } from '@aws-samples/bin-packing-shared-types';
 import QueryClient from 'containers/QueryClient';
 
 export interface AppContextApi {

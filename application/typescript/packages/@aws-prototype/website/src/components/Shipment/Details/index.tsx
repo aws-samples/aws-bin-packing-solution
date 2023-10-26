@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
 import {FC} from 'react';
-import {Shipment} from '@aws-prototype/shared-types';
+import {Shipment} from '@aws-samples/bin-packing-shared-types';
 import KeyValuePair from 'aws-northstar/components/KeyValuePair';
 import Stack from 'aws-northstar/layouts/Stack';
 

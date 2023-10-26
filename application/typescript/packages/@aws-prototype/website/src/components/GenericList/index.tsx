@@ -14,7 +14,7 @@ specific language governing permissions and limitations under the License.
 import {FC, ReactNode, useCallback, useMemo, useState} from 'react';
 import Inline from 'aws-northstar/layouts/Inline';
 import Button from 'aws-northstar/components/Button';
-import {SolutionObjectBase} from '@aws-prototype/shared-types';
+import {SolutionObjectBase} from '@aws-samples/bin-packing-shared-types';
 import {generatePath, useNavigate} from 'react-router-dom';
 import DeleteConfirmationDialog from 'components/DeleteConfirmationDialog';
 import {APIRequest, useAPIDelete, useAPIGet} from 'api';
